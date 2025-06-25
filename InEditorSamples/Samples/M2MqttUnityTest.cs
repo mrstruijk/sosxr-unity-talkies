@@ -39,10 +39,6 @@ namespace M2MqttUnity.Examples
     /// </summary>
     public class M2MqttUnityTest : M2MqttUnityClient
     {
-        [Tooltip("Set this to true to perform a testing cycle automatically on startup")]
-        [SerializeField] private bool m_autoTest = false;
-        [SerializeField] private string m_topic = "M2MQTT_Unity/test";
-        [SerializeField] private string m_message = "Hello world!";
         [Header("User Interface")]
         [SerializeField] private InputField consoleInputField;
         [SerializeField] private Toggle encryptedToggle;
@@ -57,19 +53,13 @@ namespace M2MqttUnity.Examples
         private bool updateUI = false;
 
 
-        public void TestPublish()
-        {
-            client.Publish(m_topic, Encoding.UTF8.GetBytes(m_message), MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, false);
-            Debug.Log("Test message published to topic: " + m_topic);
-            AddUiMessage("Test message published to topic: " + m_topic);
-        }
 
 
         public void SetBrokerAddress(string brokerAddress)
         {
             if (addressInputField && !updateUI)
             {
-                this.brokerAddress = brokerAddress;
+                m_brokerAddress = brokerAddress;
             }
         }
 
@@ -78,14 +68,14 @@ namespace M2MqttUnity.Examples
         {
             if (portInputField && !updateUI)
             {
-                int.TryParse(brokerPort, out this.brokerPort);
+                int.TryParse(brokerPort, out m_brokerPort);
             }
         }
 
 
         public void SetEncrypted(bool isEncrypted)
         {
-            this.isEncrypted = isEncrypted;
+            m_isEncrypted = isEncrypted;
         }
 
 
@@ -112,31 +102,26 @@ namespace M2MqttUnity.Examples
         protected override void OnConnecting()
         {
             base.OnConnecting();
-            SetUiMessage("Connecting to broker on " + brokerAddress + ":" + brokerPort + "...\n");
+            SetUiMessage("Connecting to broker on " + m_brokerAddress + ":" + m_brokerPort + "...\n");
         }
 
 
         protected override void OnConnected()
         {
             base.OnConnected();
-            SetUiMessage("Connected to broker on " + brokerAddress + "\n");
-
-            if (m_autoTest)
-            {
-                TestPublish();
-            }
+            SetUiMessage("Connected to broker on " + m_brokerAddress + "\n");
         }
 
 
         protected override void SubscribeTopics()
         {
-            client.Subscribe(new[] {m_topic}, new[] {MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE});
+            base.SubscribeTopics();
         }
 
 
         protected override void UnsubscribeTopics()
         {
-            client.Unsubscribe(new[] {m_topic});
+            base.UnsubscribeTopics();
         }
 
 
@@ -190,19 +175,19 @@ namespace M2MqttUnity.Examples
             if (addressInputField != null && connectButton != null)
             {
                 addressInputField.interactable = connectButton.interactable;
-                addressInputField.text = brokerAddress;
+                addressInputField.text = m_brokerAddress;
             }
 
             if (portInputField != null && connectButton != null)
             {
                 portInputField.interactable = connectButton.interactable;
-                portInputField.text = brokerPort.ToString();
+                portInputField.text = m_brokerPort.ToString();
             }
 
             if (encryptedToggle != null && connectButton != null)
             {
                 encryptedToggle.interactable = connectButton.interactable;
-                encryptedToggle.isOn = isEncrypted;
+                encryptedToggle.isOn = m_isEncrypted;
             }
 
             if (clearButton != null && connectButton != null)
@@ -227,15 +212,6 @@ namespace M2MqttUnity.Examples
             var msg = Encoding.UTF8.GetString(message);
             Debug.Log("Received: " + msg);
             StoreMessage(msg);
-
-            if (topic == m_topic)
-            {
-                if (m_autoTest)
-                {
-                    m_autoTest = false;
-                    Disconnect();
-                }
-            }
         }
 
 
@@ -275,15 +251,6 @@ namespace M2MqttUnity.Examples
         private void OnDestroy()
         {
             Disconnect();
-        }
-
-
-        private void OnValidate()
-        {
-            if (m_autoTest)
-            {
-                autoConnect = true;
-            }
         }
     }
 }
