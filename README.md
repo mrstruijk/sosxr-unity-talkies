@@ -20,18 +20,20 @@ An example scene is provided with a UI for controlling the connection to the bro
 
 Depends on [EnhancedLogger](https://github.com/solo-fsw/sosxr-unity-enhancedlogger)
 
-### Getting started
+## Getting started
 
 An example scene is provided in M2MqttUnity/Examples/Scenes/M2MqttUnity_Test, with a UI for controlling the connection to a MQTT broker and to test publishing and receiving messages.
 You can find in the same folder also a scene slightly changed to test the project in VR/AR/MR (M2MqttUnity_TestXR).
 
-### Building on different platform and devices
+### The Broker
 
-This project was tested with different versions of Unity (2017.1.0, 2017.1.4, 2018.2) with the following platforms:
+Setup the Mosquitto broker. A good explanation on how to set this up on Linux / Raspberry Pi can be found [here](http://www.steves-internet-guide.com/install-mosquitto-linux/).
 
-* Windows Standalone
-* Android (as simple app and for GearVR)
-* Universal Windows Platform (desktop and HoloLens, using Unity 2017.1.4 or higher).
+## Building on different platform and devices
+
+This project was tested with different versions of Unity (2017.1.0, 2017.1.4, 2018.2).
+
+### Unity - All Platforms
 
 These setting were used for all the platforms:
 
@@ -41,7 +43,7 @@ These setting were used for all the platforms:
     * *Default is fullscreen* = no
     * *Run in Background* = yes
 
-Specific settings for Android:
+### Unity - Android
 
 * Set the *Package Name*
 * for **GearVR**:
@@ -50,7 +52,7 @@ Specific settings for Android:
     * set *Minimum API Level* to 19
     * put your "oculussig..." file(s) in Assets/Plugins/Android/Assets
 
-Specific settings for Universal Windows Platform:
+### Unity - Universal Windows Platform:
 
 * build with Unity 2017.1.4 or newer
 * set the *Package Name*
@@ -62,6 +64,10 @@ Specific settings for Universal Windows Platform:
     * add *Windows Holographic* (*Windows Mixed Reality* in newer versions) in *Virtual Reality SDKs*
 
 SSL connection problems found with some combination of Unity versions/platforms.
+
+## (Micro)Python
+
+
 
 ### Contributing
 

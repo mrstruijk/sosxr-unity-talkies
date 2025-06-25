@@ -6,6 +6,7 @@ The changelog format is based on [Keep a Changelog](https://keepachangelog.com/e
 ## [0.1.0] - In Development
 
 ### Forked from: [gpvigano](https://github.com/gpvigano/M2MqttUnity)
+
 - Main purpose: turn into a package instead of a Unity Project
 
 ### Added
