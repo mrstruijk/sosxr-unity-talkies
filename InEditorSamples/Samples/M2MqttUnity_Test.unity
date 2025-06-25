@@ -2332,17 +2332,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bbaa80705124f9e439d56ca6d5e6db69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brokerAddress: 145.118.220.163
-  brokerPort: 1883
-  isEncrypted: 0
-  connectionDelay: 500
-  timeoutOnConnection: 30000
-  autoConnect: 0
-  mqttUserName: 
-  mqttPassword: 
+  m_brokerAddress: localhost
+  m_brokerPort: 1883
+  m_isEncrypted: 0
+  m_connectionDelay: 500
+  m_timeoutOnConnection: 30000
+  m_autoConnect: 0
+  m_mqttUserName: 
+  m_mqttPassword: 
+  m_testTopic: testes
+  m_testMessage: Hello world!
   m_autoTest: 0
-  m_topic: testes
-  m_message: Hello world!
   consoleInputField: {fileID: 221991987}
   encryptedToggle: {fileID: 1740149083}
   addressInputField: {fileID: 1275266004}
