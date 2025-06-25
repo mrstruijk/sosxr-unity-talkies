@@ -1,0 +1,24 @@
+{
+  "name": "com.sosxr.REPO",
+  "version": "0.0.1",
+  "displayName": "REPO",
+  "description": "REPO package for Unity",
+  "documentationUrl": "https://youtu.be/xvFZjo5PgG0?si=F3cJFXtwofUAeAq2",
+  "unity": "6000.0",
+  "dependencies": {
+    "com.unity.textmeshpro": "3.0.6"
+  },
+  "samples": [
+    {
+      "displayName": "Samples",
+      "description": "Contains samples of this package",
+      "path": "Samples~/Samples"
+    }
+  ],
+  "author": {
+    "name": "SOSXR",
+    "email": "sosxr@fsw.leidenuniv.nl",
+    "url": "https://youtu.be/xvFZjo5PgG0?si=F3cJFXtwofUAeAq2"
+  },
+  "changelogUrl": "https://github.com/solo-fsw/sosxr-unity-assetdependency/blob/main/CHANGELOG.md"
+}
