@@ -1,5 +1,5 @@
 {
-  "name": "com.sosxr.MQTT",
+  "name": "com.sosxr.mqtt",
   "version": "0.0.1",
   "displayName": "MQTT for Unity",
   "description": "A Unity package for MQTT communication",
