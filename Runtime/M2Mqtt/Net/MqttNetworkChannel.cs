@@ -442,8 +442,8 @@ namespace uPLibrary.Networking.M2Mqtt
             {
                 case MqttSslProtocols.None:
                     return SslProtocols.None;
-                case MqttSslProtocols.SSLv3:
-                    return SslProtocols.Ssl3;
+                /*case MqttSslProtocols.SSLv3:
+                    return SslProtocols.Ssl3;*/ // SSLv3 is not recommended and may not be supported in newer frameworks
                 case MqttSslProtocols.TLSv1_0:
                     return SslProtocols.Tls;
                 case MqttSslProtocols.TLSv1_1:

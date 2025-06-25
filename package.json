@@ -1,6 +1,6 @@
 {
   "name": "com.sosxr.MQTT",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "displayName": "MQTT for Unity",
   "description": "A Unity package for MQTT communication",
   "unity": "6000.0",
@@ -16,6 +16,6 @@
   ],
   "author": {
     "name": "SOSXR",
-    "email": "sosxr@fsw.leidenuniv.nl",
+    "email": "sosxr@fsw.leidenuniv.nl"
   }
 }
