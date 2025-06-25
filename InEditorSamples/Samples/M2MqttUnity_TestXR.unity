@@ -2581,12 +2581,13 @@ MonoBehaviour:
   m_isEncrypted: 0
   m_connectionDelay: 500
   m_timeoutOnConnection: 30000
-  m_autoConnect: 0
+  m_autoConnect: 1
   m_mqttUserName: 
   m_mqttPassword: 
+  m_autoTest: 1
+  m_testInterval: 5
   m_testTopic: testes
   m_testMessage: Hello world!
-  m_autoTest: 0
   consoleInputField: {fileID: 221991987}
   encryptedToggle: {fileID: 1740149083}
   addressInputField: {fileID: 1275266004}
