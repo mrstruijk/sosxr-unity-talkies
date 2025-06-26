@@ -1,6 +1,6 @@
 {
   "name": "com.sosxr.mqtt",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "displayName": "MQTT for Unity",
   "description": "A Unity package for MQTT communication",
   "unity": "6000.0",
