@@ -1,6 +1,6 @@
 {
   "name": "com.sosxr.mqtt",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "displayName": "MQTT for Unity",
   "description": "A Unity package for MQTT communication",
   "unity": "6000.0",
@@ -12,6 +12,11 @@
       "displayName": "Samples",
       "description": "Contains samples of this package",
       "path": "Samples~/Samples"
+    },
+    {
+      "displayName": "raspmarker",
+      "description": "Contains raspmarker script",
+      "path": "Samples~/raspmarker"
     }
   ],
   "author": {

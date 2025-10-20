@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -16,6 +16,7 @@ Contributors:
 
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
+
 #else
 using Microsoft.SPOT;
 #endif
@@ -23,72 +24,47 @@ using Microsoft.SPOT;
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
-    /// Event Args class for PUBLISH message received from broker
+    ///     Event Args class for PUBLISH message received from broker
     /// </summary>
     public class MqttMsgPublishEventArgs : EventArgs
     {
         #region Properties...
 
         /// <summary>
-        /// Message topic
+        ///     Message topic
         /// </summary>
-        public string Topic
-        {
-            get { return this.topic; }
-            internal set { this.topic = value; }
-        }
+        public string Topic { get; internal set; }
 
         /// <summary>
-        /// Message data
+        ///     Message data
         /// </summary>
-        public byte[] Message
-        {
-            get { return this.message; }
-            internal set { this.message = value; }
-        }
+        public byte[] Message { get; internal set; }
 
         /// <summary>
-        /// Duplicate message flag
+        ///     Duplicate message flag
         /// </summary>
-        public bool DupFlag
-        {
-            get { return this.dupFlag; }
-            set { this.dupFlag = value; }
-        }
+        public bool DupFlag { get; set; }
 
         /// <summary>
-        /// Quality of Service level
+        ///     Quality of Service level
         /// </summary>
-        public byte QosLevel
-        {
-            get { return this.qosLevel; }
-            internal set { this.qosLevel = value; }
-        }
+        public byte QosLevel { get; internal set; }
 
         /// <summary>
-        /// Retain message flag
+        ///     Retain message flag
         /// </summary>
-        public bool Retain
-        {
-            get { return this.retain; }
-            internal set { this.retain = value; }
-        }
+        public bool Retain { get; internal set; }
 
         #endregion
 
         // message topic
-        private string topic;
         // message data
-        private byte[] message;
         // duplicate delivery
-        private bool dupFlag;
         // quality of service level
-        private byte qosLevel;
         // retain flag
-        private bool retain;       
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="topic">Message topic</param>
         /// <param name="message">Message data</param>
@@ -101,11 +77,11 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             byte qosLevel,
             bool retain)
         {
-            this.topic = topic;
-            this.message = message;
-            this.dupFlag = dupFlag;
-            this.qosLevel = qosLevel;
-            this.retain = retain;
+            this.Topic = topic;
+            this.Message = message;
+            this.DupFlag = dupFlag;
+            this.QosLevel = qosLevel;
+            this.Retain = retain;
         }
     }
 }

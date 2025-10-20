@@ -3,24 +3,23 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
    Paolo Patierno - initial API and implementation and/or initial documentation
 */
 
-using System;
 using System.Text;
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
-    /// Base class for all MQTT messages
+    ///     Base class for all MQTT messages
     /// </summary>
     public abstract class MqttMsgBase
     {
@@ -30,9 +29,9 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         internal const byte MSG_TYPE_MASK = 0xF0;
         internal const byte MSG_TYPE_OFFSET = 0x04;
         internal const byte MSG_TYPE_SIZE = 0x04;
-        internal const byte MSG_FLAG_BITS_MASK = 0x0F;      // [v3.1.1]
-        internal const byte MSG_FLAG_BITS_OFFSET = 0x00;    // [v3.1.1]
-        internal const byte MSG_FLAG_BITS_SIZE = 0x04;      // [v3.1.1]
+        internal const byte MSG_FLAG_BITS_MASK = 0x0F; // [v3.1.1]
+        internal const byte MSG_FLAG_BITS_OFFSET = 0x00; // [v3.1.1]
+        internal const byte MSG_FLAG_BITS_SIZE = 0x04; // [v3.1.1]
         internal const byte DUP_FLAG_MASK = 0x08;
         internal const byte DUP_FLAG_OFFSET = 0x03;
         internal const byte DUP_FLAG_SIZE = 0x01;
@@ -92,72 +91,76 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         #region Properties...
 
         /// <summary>
-        /// Message type
+        ///     Message type
         /// </summary>
         public byte Type
         {
-            get { return this.type; }
-            set { this.type = value; }
+            get => type;
+            set => type = value;
         }
 
         /// <summary>
-        /// Duplicate message flag
+        ///     Duplicate message flag
         /// </summary>
         public bool DupFlag
         {
-            get { return this.dupFlag; }
-            set { this.dupFlag = value; }
+            get => dupFlag;
+            set => dupFlag = value;
         }
 
         /// <summary>
-        /// Quality of Service level
+        ///     Quality of Service level
         /// </summary>
         public byte QosLevel
         {
-            get { return this.qosLevel; }
-            set { this.qosLevel = value; }
+            get => qosLevel;
+            set => qosLevel = value;
         }
 
         /// <summary>
-        /// Retain message flag
+        ///     Retain message flag
         /// </summary>
         public bool Retain
         {
-            get { return this.retain; }
-            set { this.retain = value; }
+            get => retain;
+            set => retain = value;
         }
 
         /// <summary>
-        /// Message identifier for the message
+        ///     Message identifier for the message
         /// </summary>
         public ushort MessageId
         {
-            get { return this.messageId; }
-            set { this.messageId = value; }
+            get => messageId;
+            set => messageId = value;
         }
 
         #endregion
 
         // message type
         protected byte type;
+
         // duplicate delivery
         protected bool dupFlag;
+
         // quality of service level
         protected byte qosLevel;
+
         // retain flag
         protected bool retain;
+
         // message identifier
         protected ushort messageId;
 
         /// <summary>
-        /// Returns message bytes rapresentation
+        ///     Returns message bytes rapresentation
         /// </summary>
         /// <param name="protocolVersion">Protocol version</param>
         /// <returns>Bytes rapresentation</returns>
         public abstract byte[] GetBytes(byte protocolVersion);
-        
+
         /// <summary>
-        /// Encode remaining length and insert it into message buffer
+        ///     Encode remaining length and insert it into message buffer
         /// </summary>
         /// <param name="remainingLength">Remaining length value to encode</param>
         /// <param name="buffer">Message buffer for inserting encoded value</param>
@@ -165,43 +168,50 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// <returns>Index updated</returns>
         protected int encodeRemainingLength(int remainingLength, byte[] buffer, int index)
         {
-            int digit = 0;
+            var digit = 0;
             do
             {
                 digit = remainingLength % 128;
                 remainingLength /= 128;
                 if (remainingLength > 0)
+                {
                     digit = digit | 0x80;
+                }
+
                 buffer[index++] = (byte)digit;
-            } while (remainingLength > 0);
+            }
+            while (remainingLength > 0);
+
             return index;
         }
 
         /// <summary>
-        /// Decode remaining length reading bytes from socket
+        ///     Decode remaining length reading bytes from socket
         /// </summary>
         /// <param name="channel">Channel from reading bytes</param>
         /// <returns>Decoded remaining length</returns>
         protected static int decodeRemainingLength(IMqttNetworkChannel channel)
         {
-            int multiplier = 1;
-            int value = 0;
-            int digit = 0;
-            byte[] nextByte = new byte[1];
+            var multiplier = 1;
+            var value = 0;
+            var digit = 0;
+            var nextByte = new byte[1];
             do
             {
                 // next digit from stream
                 channel.Receive(nextByte);
                 digit = nextByte[0];
-                value += ((digit & 127) * multiplier);
+                value += (digit & 127) * multiplier;
                 multiplier *= 128;
-            } while ((digit & 128) != 0);
+            }
+            while ((digit & 128) != 0);
+
             return value;
         }
 
 #if TRACE
         /// <summary>
-        /// Returns a string representation of the message for tracing
+        ///     Returns a string representation of the message for tracing
         /// </summary>
         /// <param name="name">Message name</param>
         /// <param name="fieldNames">Message fields name</param>
@@ -209,14 +219,14 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// <returns>String representation of the message</returns>
         protected string GetTraceString(string name, object[] fieldNames, object[] fieldValues)
         {
-            StringBuilder sb = new StringBuilder();
+            var sb = new StringBuilder();
             sb.Append(name);
-            
-            if ((fieldNames != null) && (fieldValues != null))
+
+            if (fieldNames != null && fieldValues != null)
             {
                 sb.Append("(");
-                bool addComma = false;
-                for (int i = 0; i < fieldValues.Length; i++)
+                var addComma = false;
+                for (var i = 0; i < fieldValues.Length; i++)
                 {
                     if (fieldValues[i] != null)
                     {
@@ -231,20 +241,21 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
                         addComma = true;
                     }
                 }
+
                 sb.Append(")");
             }
-            
+
             return sb.ToString();
         }
 
-        object GetStringObject(object value)
+        private object GetStringObject(object value)
         {
-            byte[] binary = value as byte[];
+            var binary = value as byte[];
             if (binary != null)
             {
-                string hexChars = "0123456789ABCDEF";
-                StringBuilder sb = new StringBuilder(binary.Length * 2);
-                for (int i = 0; i < binary.Length; ++i)
+                var hexChars = "0123456789ABCDEF";
+                var sb = new StringBuilder(binary.Length * 2);
+                for (var i = 0; i < binary.Length; ++i)
                 {
                     sb.Append(hexChars[binary[i] >> 4]);
                     sb.Append(hexChars[binary[i] & 0x0F]);
@@ -253,16 +264,21 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
                 return sb.ToString();
             }
 
-            object[] list = value as object[];
+            var list = value as object[];
             if (list != null)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 sb.Append('[');
-                for (int i = 0; i < list.Length; ++i)
+                for (var i = 0; i < list.Length; ++i)
                 {
-                    if (i > 0) sb.Append(',');
+                    if (i > 0)
+                    {
+                        sb.Append(',');
+                    }
+
                     sb.Append(list[i]);
                 }
+
                 sb.Append(']');
 
                 return sb.ToString();

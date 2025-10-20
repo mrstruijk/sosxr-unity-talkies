@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -90,11 +90,10 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// <returns>SUBSCRIBE message instance</returns>
         public static MqttMsgSubscribe Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel)
         {
-            byte[] buffer;
-            int index = 0;
+            var index = 0;
             byte[] topicUtf8;
             int topicUtf8Length;
-            MqttMsgSubscribe msg = new MqttMsgSubscribe();
+            var msg = new MqttMsgSubscribe();
 
             if (protocolVersion == MqttMsgConnect.PROTOCOL_VERSION_V3_1_1)
             {
@@ -106,11 +105,11 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             }
 
             // get remaining length and allocate buffer
-            int remainingLength = MqttMsgBase.decodeRemainingLength(channel);
-            buffer = new byte[remainingLength];
+            var remainingLength = MqttMsgBase.decodeRemainingLength(channel);
+            var buffer = new byte[remainingLength];
 
             // read bytes from socket...
-            int received = channel.Receive(buffer);
+            var received = channel.Receive(buffer);
 
             if (protocolVersion == MqttMsgConnect.PROTOCOL_VERSION_V3_1)
             {
@@ -135,7 +134,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 #if (MF_FRAMEWORK_VERSION_V4_2 || MF_FRAMEWORK_VERSION_V4_3)
             IList tmpTopics = new ArrayList();
             IList tmpQosLevels = new ArrayList();
-// else other frameworks (.Net, .Net Compact, Mono, Windows Phone) 
+// else other frameworks (.Net, .Net Compact, Mono, Windows Phone)
 #else
             IList<String> tmpTopics = new List<String>();
             IList<byte> tmpQosLevels = new List<byte>();
@@ -158,7 +157,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             // copy from list to array
             msg.topics = new string[tmpTopics.Count];
             msg.qosLevels = new byte[tmpQosLevels.Count];
-            for (int i = 0; i < tmpTopics.Count; i++)
+            for (var i = 0; i < tmpTopics.Count; i++)
             {
                 msg.topics[i] = (string)tmpTopics[i];
                 msg.qosLevels[i] = (byte)tmpQosLevels[i];
@@ -169,12 +168,11 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
         public override byte[] GetBytes(byte protocolVersion)
         {
-            int fixedHeaderSize = 0;
-            int varHeaderSize = 0;
-            int payloadSize = 0;
-            int remainingLength = 0;
-            byte[] buffer;
-            int index = 0;
+            var fixedHeaderSize = 0;
+            var varHeaderSize = 0;
+            var payloadSize = 0;
+            var remainingLength = 0;
+            var index = 0;
 
             // topics list empty
             if ((this.topics == null) || (this.topics.Length == 0))
@@ -194,8 +192,8 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             // message identifier
             varHeaderSize += MESSAGE_ID_SIZE;
 
-            int topicIdx = 0;
-            byte[][] topicsUtf8 = new byte[this.topics.Length][];
+            var topicIdx = 0;
+            var topicsUtf8 = new byte[this.topics.Length][];
 
             for (topicIdx = 0; topicIdx < this.topics.Length; topicIdx++)
             {
@@ -216,7 +214,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             // first byte of fixed header
             fixedHeaderSize = 1;
 
-            int temp = remainingLength;
+            var temp = remainingLength;
             // increase fixed header size based on remaining length
             // (each remaining length byte can encode until 128)
             do
@@ -226,7 +224,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             } while (temp > 0);
 
             // allocate buffer for message
-            buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
+            var buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
 
             // first fixed header byte
             if (protocolVersion == MqttMsgConnect.PROTOCOL_VERSION_V3_1_1)
@@ -250,7 +248,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
                 throw new MqttClientException(MqttClientErrorCode.WrongMessageId);
             }
             buffer[index++] = (byte)((messageId >> 8) & 0x00FF); // MSB
-            buffer[index++] = (byte)(messageId & 0x00FF); // LSB 
+            buffer[index++] = (byte)(messageId & 0x00FF); // LSB
 
             topicIdx = 0;
             for (topicIdx = 0; topicIdx < this.topics.Length; topicIdx++)

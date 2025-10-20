@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -35,12 +35,11 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
         public override byte[] GetBytes(byte protocolVersion)
         {
-            int fixedHeaderSize = 0;
-            int varHeaderSize = 0;
-            int payloadSize = 0;
-            int remainingLength = 0;
-            byte[] buffer;
-            int index = 0;
+            var fixedHeaderSize = 0;
+            var varHeaderSize = 0;
+            const int payloadSize = 0;
+            var remainingLength = 0;
+            var index = 0;
 
             // message identifier
             varHeaderSize += MESSAGE_ID_SIZE;
@@ -50,7 +49,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             // first byte of fixed header
             fixedHeaderSize = 1;
 
-            int temp = remainingLength;
+            var temp = remainingLength;
             // increase fixed header size based on remaining length
             // (each remaining length byte can encode until 128)
             do
@@ -60,7 +59,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             } while (temp > 0);
 
             // allocate buffer for message
-            buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
+            var buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
 
             // first fixed header byte
             if (protocolVersion == MqttMsgConnect.PROTOCOL_VERSION_V3_1_1)
@@ -72,13 +71,13 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
                 buffer[index] |= this.dupFlag ? (byte)(1 << DUP_FLAG_OFFSET) : (byte)0x00;
                 index++;
             }
-            
+
             // encode remaining length
             index = this.encodeRemainingLength(remainingLength, buffer, index);
 
             // get next message identifier
             buffer[index++] = (byte)((this.messageId >> 8) & 0x00FF); // MSB
-            buffer[index++] = (byte)(this.messageId & 0x00FF); // LSB 
+            buffer[index++] = (byte)(this.messageId & 0x00FF); // LSB
 
             return buffer;
         }
@@ -92,9 +91,8 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// <returns>PUBREL message instance</returns>
         public static MqttMsgPubrel Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel)
         {
-            byte[] buffer;
-            int index = 0;
-            MqttMsgPubrel msg = new MqttMsgPubrel();
+            var index = 0;
+            var msg = new MqttMsgPubrel();
 
             if (protocolVersion == MqttMsgConnect.PROTOCOL_VERSION_V3_1_1)
             {
@@ -104,8 +102,8 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             }
 
             // get remaining length and allocate buffer
-            int remainingLength = MqttMsgBase.decodeRemainingLength(channel);
-            buffer = new byte[remainingLength];
+            var remainingLength = MqttMsgBase.decodeRemainingLength(channel);
+            var buffer = new byte[remainingLength];
 
             // read bytes from socket...
             channel.Receive(buffer);

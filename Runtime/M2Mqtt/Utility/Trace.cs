@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -19,7 +19,7 @@ using System.Diagnostics;
 namespace uPLibrary.Networking.M2Mqtt.Utility
 {
     /// <summary>
-    /// Tracing levels
+    ///     Tracing levels
     /// </summary>
     public enum TraceLevel
     {
@@ -35,7 +35,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
     public delegate void WriteTrace(string format, params object[] args);
 
     /// <summary>
-    /// Tracing class
+    ///     Tracing class
     /// </summary>
     public static class Trace
     {
@@ -45,10 +45,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         [Conditional("DEBUG")]
         public static void Debug(string format, params object[] args)
         {
-            if (TraceListener != null)
-            {
-                TraceListener(format, args);
-            }
+            TraceListener?.Invoke(format, args);
         }
 
         public static void WriteLine(TraceLevel level, string format)

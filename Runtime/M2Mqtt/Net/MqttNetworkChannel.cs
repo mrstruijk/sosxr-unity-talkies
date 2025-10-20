@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -16,6 +16,7 @@ Contributors:
 
    Giovanni Paolo Vigano' - preprocessor directives for platform dependent compilation in Unity
 */
+
 #if !(!UNITY_EDITOR&&UNITY_WSA_10_0&&!ENABLE_IL2CPP)
 
 #if SSL
@@ -26,17 +27,17 @@ using System.Net.Security;
 using System.Security.Authentication;
 #endif
 #endif
-using System.Net.Sockets;
-using System.Net;
-using System.Security.Cryptography.X509Certificates;
 using System;
+using System.Net;
 using System.Net.Security;
+using System.Net.Sockets;
 using System.Security.Authentication;
+using System.Security.Cryptography.X509Certificates;
 
 namespace uPLibrary.Networking.M2Mqtt
 {
     /// <summary>
-    /// Channel to communicate over the network
+    ///     Channel to communicate over the network
     /// </summary>
     public class MqttNetworkChannel : IMqttNetworkChannel
     {
@@ -45,19 +46,19 @@ namespace uPLibrary.Networking.M2Mqtt
         private readonly LocalCertificateSelectionCallback userCertificateSelectionCallback;
 #endif
         // remote host information
-        private string remoteHostName;
-        private IPAddress remoteIpAddress;
-        private int remotePort;
 
         // socket for communication
         private Socket socket;
+
         // using SSL
         private bool secure;
 
         // CA certificate (on client)
         private X509Certificate caCert;
+
         // Server certificate (on broker)
         private X509Certificate serverCert;
+
         // client certificate (on client)
         private X509Certificate clientCert;
 
@@ -65,19 +66,19 @@ namespace uPLibrary.Networking.M2Mqtt
         private MqttSslProtocols sslProtocol;
 
         /// <summary>
-        /// Remote host name
+        ///     Remote host name
         /// </summary>
-        public string RemoteHostName { get { return this.remoteHostName; } }
+        public string RemoteHostName { get; }
 
         /// <summary>
-        /// Remote IP address
+        ///     Remote IP address
         /// </summary>
-        public IPAddress RemoteIpAddress { get { return this.remoteIpAddress; } }
+        public IPAddress RemoteIpAddress { get; }
 
         /// <summary>
-        /// Remote port
+        ///     Remote port
         /// </summary>
-        public int RemotePort { get { return this.remotePort; } }
+        public int RemotePort { get; }
 
 #if SSL
         // SSL stream
@@ -88,7 +89,7 @@ namespace uPLibrary.Networking.M2Mqtt
 #endif
 
         /// <summary>
-        /// Data available on the channel
+        ///     Data available on the channel
         /// </summary>
         public bool DataAvailable
         {
@@ -107,13 +108,13 @@ namespace uPLibrary.Networking.M2Mqtt
                     return (this.socket.Available > 0);
 #endif
 #else
-                return (this.socket.Available > 0);
+                return socket.Available > 0;
 #endif
             }
         }
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="socket">Socket opened with the client</param>
         public MqttNetworkChannel(Socket socket)
@@ -123,9 +124,8 @@ namespace uPLibrary.Networking.M2Mqtt
             : this(socket, false, null, MqttSslProtocols.None)
 #endif
         {
-
         }
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -154,7 +154,7 @@ namespace uPLibrary.Networking.M2Mqtt
         }
 
         /// <summary>
-        /// Constructor
+        ///     Constructor
         /// </summary>
         /// <param name="remoteHostName">Remote Host name</param>
         /// <param name="remotePort">Remote port</param>
@@ -199,13 +199,17 @@ namespace uPLibrary.Networking.M2Mqtt
             // in this case the parameter remoteHostName isn't a valid IP address
             if (remoteIpAddress == null)
             {
-                IPHostEntry hostEntry = Dns.GetHostEntry(remoteHostName);
-                if ((hostEntry != null) && (hostEntry.AddressList.Length > 0))
+                var hostEntry = Dns.GetHostEntry(remoteHostName);
+                if (hostEntry != null && hostEntry.AddressList.Length > 0)
                 {
                     // check for the first address not null
                     // it seems that with .Net Micro Framework, the IPV6 addresses aren't supported and return "null"
-                    int i = 0;
-                    while (hostEntry.AddressList[i] == null) i++;
+                    var i = 0;
+                    while (hostEntry.AddressList[i] == null)
+                    {
+                        i++;
+                    }
+
                     remoteIpAddress = hostEntry.AddressList[i];
                 }
                 else
@@ -214,9 +218,9 @@ namespace uPLibrary.Networking.M2Mqtt
                 }
             }
 
-            this.remoteHostName = remoteHostName;
-            this.remoteIpAddress = remoteIpAddress;
-            this.remotePort = remotePort;
+            this.RemoteHostName = remoteHostName;
+            this.RemoteIpAddress = remoteIpAddress;
+            this.RemotePort = remotePort;
             this.secure = secure;
             this.caCert = caCert;
             this.clientCert = clientCert;
@@ -228,13 +232,13 @@ namespace uPLibrary.Networking.M2Mqtt
         }
 
         /// <summary>
-        /// Connect to remote server
+        ///     Connect to remote server
         /// </summary>
         public void Connect()
         {
-            this.socket = new Socket(this.remoteIpAddress.GetAddressFamily(), SocketType.Stream, ProtocolType.Tcp);
+            socket = new Socket(RemoteIpAddress.GetAddressFamily(), SocketType.Stream, ProtocolType.Tcp);
             // try connection to the broker
-            this.socket.Connect(new IPEndPoint(this.remoteIpAddress, this.remotePort));
+            socket.Connect(new IPEndPoint(RemoteIpAddress, RemotePort));
 
 #if SSL
             // secure channel requested
@@ -272,7 +276,7 @@ namespace uPLibrary.Networking.M2Mqtt
         }
 
         /// <summary>
-        /// Send data on the network channel
+        ///     Send data on the network channel
         /// </summary>
         /// <param name="buffer">Data buffer to send</param>
         /// <returns>Number of byte sent</returns>
@@ -288,12 +292,12 @@ namespace uPLibrary.Networking.M2Mqtt
             else
                 return this.socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
 #else
-            return this.socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+            return socket.Send(buffer, 0, buffer.Length, SocketFlags.None);
 #endif
         }
 
         /// <summary>
-        /// Receive data from the network
+        ///     Receive data from the network
         /// </summary>
         /// <param name="buffer">Data buffer for receiving data</param>
         /// <returns>Number of bytes received</returns>
@@ -337,17 +341,21 @@ namespace uPLibrary.Networking.M2Mqtt
             {
                 // fixed scenario with socket closed gracefully by peer/broker and
                 // Read return 0. Avoid infinite loop.
-                read = this.socket.Receive(buffer, idx, buffer.Length - idx, SocketFlags.None);
+                read = socket.Receive(buffer, idx, buffer.Length - idx, SocketFlags.None);
                 if (read == 0)
+                {
                     return 0;
+                }
+
                 idx += read;
             }
+
             return buffer.Length;
 #endif
         }
 
         /// <summary>
-        /// Receive data from the network channel with a specified timeout
+        ///     Receive data from the network channel with a specified timeout
         /// </summary>
         /// <param name="buffer">Data buffer for receiving data</param>
         /// <param name="timeout">Timeout on receiving (in milliseconds)</param>
@@ -355,18 +363,16 @@ namespace uPLibrary.Networking.M2Mqtt
         public int Receive(byte[] buffer, int timeout)
         {
             // check data availability (timeout is in microseconds)
-            if (this.socket.Poll(timeout * 1000, SelectMode.SelectRead))
+            if (socket.Poll(timeout * 1000, SelectMode.SelectRead))
             {
-                return this.Receive(buffer);
+                return Receive(buffer);
             }
-            else
-            {
-                return 0;
-            }
+
+            return 0;
         }
 
         /// <summary>
-        /// Close the network channel
+        ///     Close the network channel
         /// </summary>
         public void Close()
         {
@@ -380,12 +386,12 @@ namespace uPLibrary.Networking.M2Mqtt
             }
             this.socket.Close();
 #else
-            this.socket.Close();
+            socket.Close();
 #endif
         }
 
         /// <summary>
-        /// Accept connection from a remote client
+        ///     Accept connection from a remote client
         /// </summary>
         public void Accept()
         {
@@ -404,18 +410,17 @@ namespace uPLibrary.Networking.M2Mqtt
 
             return;
 #else
-            return;
 #endif
         }
     }
 
     /// <summary>
-    /// IPAddress Utility class
+    ///     IPAddress Utility class
     /// </summary>
     public static class IPAddressUtility
     {
         /// <summary>
-        /// Return AddressFamily for the IP address
+        ///     Return AddressFamily for the IP address
         /// </summary>
         /// <param name="ipAddress">IP address to check</param>
         /// <returns>Address family</returns>
@@ -431,7 +436,7 @@ namespace uPLibrary.Networking.M2Mqtt
     }
 
     /// <summary>
-    /// MQTT SSL utility class
+    ///     MQTT SSL utility class
     /// </summary>
     public static class MqttSslUtility
     {

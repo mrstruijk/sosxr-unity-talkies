@@ -2,10 +2,10 @@
 using System.Xml.Serialization;
 using UnityEngine;
 
-namespace M2MqttUnity
+namespace MQTTUnity
 {
     /// <summary>
-    /// Serializable settings for MQTT broker configuration.
+    ///     Serializable settings for MQTT broker configuration.
     /// </summary>
     [Serializable]
     [XmlType(TypeName = "broker-settings")]
@@ -18,10 +18,9 @@ namespace M2MqttUnity
         public int port = 1883;
 
         [Tooltip("Encrypted access to the broker")]
-        public bool encrypted = false;
+        public bool encrypted;
 
         [Tooltip("Optional alternate addresses, used if the previous host is not accessible")]
         public string[] alternateAddress;
     }
 }
-

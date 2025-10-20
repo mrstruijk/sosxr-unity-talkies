@@ -3,11 +3,11 @@ Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
 are made available under the terms of the Eclipse Public License v1.0
-and Eclipse Distribution License v1.0 which accompany this distribution. 
+and Eclipse Distribution License v1.0 which accompany this distribution.
 
-The Eclipse Public License is available at 
+The Eclipse Public License is available at
    http://www.eclipse.org/legal/epl-v10.html
-and the Eclipse Distribution License is available at 
+and the Eclipse Distribution License is available at
    http://www.eclipse.org/org/documents/edl-v10.php.
 
 Contributors:
@@ -51,7 +51,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         private string topic;
         // message data
         private byte[] message;
-        
+
         /// <summary>
         /// Constructor
         /// </summary>
@@ -96,12 +96,11 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
         public override byte[] GetBytes(byte protocolVersion)
         {
-            int fixedHeaderSize = 0;
-            int varHeaderSize = 0;
-            int payloadSize = 0;
-            int remainingLength = 0;
-            byte[] buffer;
-            int index = 0;
+            var fixedHeaderSize = 0;
+            var varHeaderSize = 0;
+            var payloadSize = 0;
+            var remainingLength = 0;
+            var index = 0;
 
             // topic can't contain wildcards
             if ((this.topic.IndexOf('#') != -1) || (this.topic.IndexOf('+') != -1))
@@ -115,18 +114,18 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             if (this.qosLevel > QOS_LEVEL_EXACTLY_ONCE)
                 throw new MqttClientException(MqttClientErrorCode.QosNotAllowed);
 
-            byte[] topicUtf8 = Encoding.UTF8.GetBytes(this.topic);
+            var topicUtf8 = Encoding.UTF8.GetBytes(this.topic);
 
             // topic name
             varHeaderSize += topicUtf8.Length + 2;
 
             // message id is valid only with QOS level 1 or QOS level 2
-            if ((this.qosLevel == QOS_LEVEL_AT_LEAST_ONCE) || 
+            if ((this.qosLevel == QOS_LEVEL_AT_LEAST_ONCE) ||
                 (this.qosLevel == QOS_LEVEL_EXACTLY_ONCE))
             {
                 varHeaderSize += MESSAGE_ID_SIZE;
             }
-            
+
             // check on message with zero length
             if (this.message != null)
                 // message data
@@ -137,7 +136,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             // first byte of fixed header
             fixedHeaderSize = 1;
 
-            int temp = remainingLength;
+            var temp = remainingLength;
             // increase fixed header size based on remaining length
             // (each remaining length byte can encode until 128)
             do
@@ -147,7 +146,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             } while (temp > 0);
 
             // allocate buffer for message
-            buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
+            var buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
 
             // first fixed header byte
             buffer[index] = (byte)((MQTT_MSG_PUBLISH_TYPE << MSG_TYPE_OFFSET) |
@@ -196,23 +195,20 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// <returns>PUBLISH message instance</returns>
         public static MqttMsgPublish Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel)
         {
-            byte[] buffer;
-            int index = 0;
-            byte[] topicUtf8;
-            int topicUtf8Length;
-            MqttMsgPublish msg = new MqttMsgPublish();
+            var index = 0;
+            var msg = new MqttMsgPublish();
 
             // get remaining length and allocate buffer
-            int remainingLength = MqttMsgBase.decodeRemainingLength(channel);
-            buffer = new byte[remainingLength];
+            var remainingLength = MqttMsgBase.decodeRemainingLength(channel);
+            var buffer = new byte[remainingLength];
 
             // read bytes from socket...
-            int received = channel.Receive(buffer);
+            var received = channel.Receive(buffer);
 
             // topic name
-            topicUtf8Length = ((buffer[index++] << 8) & 0xFF00);
+            var topicUtf8Length = ((buffer[index++] << 8) & 0xFF00);
             topicUtf8Length |= buffer[index++];
-            topicUtf8 = new byte[topicUtf8Length];
+            var topicUtf8 = new byte[topicUtf8Length];
             Array.Copy(buffer, index, topicUtf8, 0, topicUtf8Length);
             index += topicUtf8Length;
             msg.topic = new String(Encoding.UTF8.GetChars(topicUtf8));
@@ -226,7 +222,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             msg.dupFlag = (((fixedHeaderFirstByte & DUP_FLAG_MASK) >> DUP_FLAG_OFFSET) == 0x01);
             // read retain flag from fixed header
             msg.retain = (((fixedHeaderFirstByte & RETAIN_FLAG_MASK) >> RETAIN_FLAG_OFFSET) == 0x01);
-            
+
             // message id is valid only with QOS level 1 or QOS level 2
             if ((msg.qosLevel == QOS_LEVEL_AT_LEAST_ONCE) ||
                 (msg.qosLevel == QOS_LEVEL_EXACTLY_ONCE))
@@ -237,9 +233,9 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             }
 
             // get payload with message data
-            int messageSize = remainingLength - index;
-            int remaining = messageSize;
-            int messageOffset = 0;
+            var messageSize = remainingLength - index;
+            var remaining = messageSize;
+            var messageOffset = 0;
             msg.message = new byte[messageSize];
 
             // BUG FIX 26/07/2013 : receiving large payload

@@ -67,8 +67,6 @@ SSL connection problems found with some combination of Unity versions/platforms.
 
 ## (Micro)Python
 
-
-
 ### Contributing
 
 Contributions from you are welcome!
