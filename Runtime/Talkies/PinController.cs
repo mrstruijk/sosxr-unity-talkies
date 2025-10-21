@@ -118,7 +118,7 @@ public class PinController : MonoBehaviour
         }
         else // This should include the PING/PONG debug response
         {
-            this.Info($"Pico: {response}");
+            this.Debug($"Pico: {response}");
         }
     }
 
@@ -151,7 +151,7 @@ public class PinController : MonoBehaviour
     ///     Basic debug method.
     /// </summary>
     [Button]
-    public void SendDebugPing()
+    public void Ping()
     {
         SendCommand("PING");
     }
