@@ -1,22 +1,22 @@
 {
-  "name": "com.sosxr.mqtt",
-  "version": "0.1.0",
-  "displayName": "MQTT for Unity",
-  "description": "A Unity package for MQTT communication",
+  "name": "com.sosxr.talkies",
+  "version": "0.2.0",
+  "displayName": "Talkies",
+  "description": "A Unity package for communication with other devices",
   "unity": "6000.0",
   "dependencies": {
     "com.unity.textmeshpro": "3.0.6"
   },
   "samples": [
     {
-      "displayName": "Samples",
-      "description": "Contains samples of this package",
-      "path": "Samples~/Samples"
+      "displayName": "MQTT",
+      "description": "Contains MQTT samples",
+      "path": "Samples~/MQTT"
     },
     {
-      "displayName": "raspmarker",
-      "description": "Contains raspmarker script",
-      "path": "Samples~/raspmarker"
+      "displayName": "MQTT raspmarker",
+      "description": "Contains raspmarker samples",
+      "path": "Samples~/MQTT_raspmarker"
     }
   ],
   "author": {
