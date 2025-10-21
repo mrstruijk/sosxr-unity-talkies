@@ -27,10 +27,13 @@
 - [Wifi connection icons created by NX Icon - Flaticon](https://www.flaticon.com/free-icons/wifi-connection "wifi connection icons")
 
 - [Arduino / SBC](https://www.flaticon.com/free-icons/hardware)
+
 - [Data connector icons created by Atif Arshad - Flaticon](https://www.flaticon.com/free-icons/data-connector "data connector icons")
 
 - [Serial icons created by Eucalyp - Flaticon](https://www.flaticon.com/free-icons/serial "serial icons")
 
 - [GPIO connector](https://wiki.pine64.org/index.php?title=File:GPIO_icon.png)
+
 - [Connector Icon](https://icon-library.com/icon/raspberry-pi-icon-png-14.html)
-- i
+
+- [GPIO icon](https://freesvg.org/raspberry-pi-gpio-diagram)

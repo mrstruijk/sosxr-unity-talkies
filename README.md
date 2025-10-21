@@ -14,7 +14,7 @@
 ## Dependency
 
 Depends on [EnhancedLogger](https://github.com/solo-fsw/sosxr-unity-enhancedlogger)
-
+Depends on [Sea Shark](https://github.com/solo-fsw/sosxr-unity-seashark)
 
 ### MQTT
 
