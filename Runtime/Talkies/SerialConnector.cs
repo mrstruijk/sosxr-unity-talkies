@@ -26,13 +26,19 @@ public class SerialConnector : MonoBehaviour
     private static extern void SerialClose();
 
 
+    private void OnValidate()
+    {
+        RefreshPorts();
+    }
+
+
     private void Start()
     {
         RefreshPorts();
 
         if (m_availablePorts.Length > 0)
         {
-            ConnectToPico();
+            ConnectOverSerial();
         }
     }
 
@@ -62,11 +68,16 @@ public class SerialConnector : MonoBehaviour
 
 
     [Button]
-    public void ConnectToPico()
+    public void ConnectOverSerial()
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
         if (m_isConnected)
         {
-            DisconnectFromPico(); // Close any existing connection
+            Disconnect(); // Close any existing connection
         }
 
         if (string.IsNullOrEmpty(m_portName))
@@ -84,7 +95,7 @@ public class SerialConnector : MonoBehaviour
             if (result == 1)
             {
                 m_isConnected = true;
-                this.Success($"Connected to Pico on {m_portName}");
+                this.Success($"Connected to device on {m_portName}");
             }
             else
             {
@@ -100,13 +111,18 @@ public class SerialConnector : MonoBehaviour
 
 
     [Button]
-    private void DisconnectFromPico()
+    private void Disconnect()
     {
+        if (!Application.isPlaying)
+        {
+            return;
+        }
+
         SerialClose();
 
         if (m_isConnected)
         {
-            this.Success("Disconnected from Pico on " + m_portName);
+            this.Success("Disconnected from device on " + m_portName);
         }
 
         m_isConnected = false;
@@ -115,7 +131,7 @@ public class SerialConnector : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        DisconnectFromPico();
+        Disconnect();
     }
 
 

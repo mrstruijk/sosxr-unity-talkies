@@ -164,6 +164,7 @@ public class PinController : MonoBehaviour
     }
 
 
+    [Button]
     public void SetPin(int pin, bool value)
     {
         SendCommand($"SET,{pin},{(value ? 1 : 0)}");
@@ -184,6 +185,7 @@ public class PinController : MonoBehaviour
     }
 
 
+    [Button]
     public void GetPin(int pin)
     {
         SendCommand($"GET,{pin}");
@@ -209,6 +211,7 @@ public class PinController : MonoBehaviour
     }
 
 
+    [Button]
     public void TogglePin(int pin)
     {
         TogglePin(pin, (p, currentValue) =>
