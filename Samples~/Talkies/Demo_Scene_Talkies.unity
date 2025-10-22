@@ -221,6 +221,7 @@ GameObject:
   m_Component:
   - component: {fileID: 418954523}
   - component: {fileID: 418954522}
+  - component: {fileID: 418954524}
   m_Layer: 0
   m_Name: PinController
   m_TagString: Untagged
@@ -240,10 +241,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd1add31ea2c44d238373cc0e79376bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SOSXR.Talkies::SerialConnector
-  m_availablePorts:
-  - /dev/cu.usbmodem21414401
+  m_availablePorts: []
   m_selectedPortIndex: 0
-  m_portName: /dev/cu.usbmodem21414401
+  m_portName: 
   m_baudRate: 115200
   m_isConnected: 0
 --- !u!4 &418954523
@@ -261,6 +261,20 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &418954524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 418954520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03df097055dc44805973e41d4cd051a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies::PinController
+  m_defaultPin: 16
+  m_serialConnector: {fileID: 418954522}
 --- !u!1 &886288747
 GameObject:
   m_ObjectHideFlags: 11

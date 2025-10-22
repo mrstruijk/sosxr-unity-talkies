@@ -42,6 +42,12 @@ public class PinController : MonoBehaviour
 
     private void Update()
     {
+        ReadBuffer();
+    }
+
+
+    private void ReadBuffer()
+    {
         if (!m_serialConnector.IsConnected)
         {
             this.Warning("We're not connected! Cannot continue");
@@ -49,12 +55,6 @@ public class PinController : MonoBehaviour
             return;
         }
 
-        ReadBuffer();
-    }
-
-
-    private void ReadBuffer()
-    {
         var bytesRead = SerialRead(readBuffer, readBuffer.Length);
 
         if (bytesRead <= 0)
@@ -150,76 +150,10 @@ public class PinController : MonoBehaviour
     /// <summary>
     ///     Basic debug method.
     /// </summary>
-    [Button]
+    [Button(space: 10, horizontalLine: true)]
     public void Ping()
     {
         SendCommand("PING");
-    }
-
-
-    [Button]
-    public void SetDefaultPin(bool value)
-    {
-        SendCommand($"SET,{m_defaultPin},{(value ? 1 : 0)}");
-    }
-
-
-    [Button]
-    public void SetPin(int pin, bool value)
-    {
-        SendCommand($"SET,{pin},{(value ? 1 : 0)}");
-    }
-
-
-    private void OnPinSet(int pin, bool value)
-    {
-        this.Verbose($"We asked pin {pin} to be set to {HighLow(value)}.");
-        OnPinSetEvent?.Invoke(pin, value);
-    }
-
-
-    [Button]
-    public void GetDefaultPin()
-    {
-        SendCommand($"GET,{m_defaultPin}");
-    }
-
-
-    [Button]
-    public void GetPin(int pin)
-    {
-        SendCommand($"GET,{pin}");
-    }
-
-
-    private void OnPinGet(int pin, bool value)
-    {
-        this.Verbose($"Device states that pin {pin} is now {HighLow(value)}.");
-        OnPinGetEvent?.Invoke(pin, value);
-    }
-
-
-    [Button]
-    public void ToggleDefaultPin()
-    {
-        TogglePin(m_defaultPin, (pin, currentValue) =>
-        {
-            var newValue = !currentValue;
-            SetPin(pin, newValue);
-            this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
-        });
-    }
-
-
-    [Button]
-    public void TogglePin(int pin)
-    {
-        TogglePin(pin, (p, currentValue) =>
-        {
-            var newValue = !currentValue;
-            SetPin(pin, newValue);
-            this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
-        });
     }
 
 
@@ -235,6 +169,72 @@ public class PinController : MonoBehaviour
             SetPin(pin, newValue);
             this.Debug($"LED toggled from {HighLow(currentValue)} to {HighLow(newValue)}");
         });
+    }
+
+
+    [Button(space: 10, horizontalLine: true)]
+    public void SetDefaultPin(bool value)
+    {
+        SendCommand($"SET,{m_defaultPin},{(value ? 1 : 0)}");
+    }
+
+
+    [Button]
+    public void GetDefaultPin()
+    {
+        SendCommand($"GET,{m_defaultPin}");
+    }
+
+
+    [Button]
+    public void ToggleDefaultPin()
+    {
+        TogglePin(m_defaultPin, (pin, currentValue) =>
+        {
+            var newValue = !currentValue;
+            SetPin(pin, newValue);
+            this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
+        });
+    }
+
+
+    [Button(space: 10, horizontalLine: true)]
+    public void SetPin(int pin, bool value)
+    {
+        SendCommand($"SET,{pin},{(value ? 1 : 0)}");
+    }
+
+
+    [Button]
+    public void GetPin(int pin)
+    {
+        SendCommand($"GET,{pin}");
+    }
+
+
+    [Button]
+    public void TogglePin(int pin)
+    {
+        TogglePin(pin, (p, currentValue) =>
+        {
+            var newValue = !currentValue;
+            SetPin(pin, newValue);
+            this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
+        });
+    }
+
+
+    private void OnPinSet(int pin, bool value)
+    {
+        this.Verbose($"We asked pin {pin} to be set to {HighLow(value)}.");
+        OnPinSetEvent?.Invoke(pin, value);
+    }
+
+
+    private void OnPinGet(int pin, bool value)
+    {
+        this.Verbose($"Device states that pin {pin} is now {HighLow(value)}.");
+        OnPinGetEvent?.Invoke(pin, value);
     }
 
 
