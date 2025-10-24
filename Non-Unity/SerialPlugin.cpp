@@ -1,3 +1,11 @@
+// SerialPlugin.cpp 
+// Compile as shared library: .dll (Windows) / .bundle (macOS) which needs be placed in a /Plugins folder inside Unity Assets folder. 
+// Example compilation commands: 
+// Windows (Visual Studio CPP Build Tools), from https://visualstudio.microsoft.com/visual-cpp-build-tools/:
+// cl /EHsc /MD /LD SerialPlugin.cpp /Fe:SerialPlugin.dll
+// macOS (clang++):
+// clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin.cpp -framework IOKit -framework CoreFoundation
+
 #ifdef _WIN32
     #include <windows.h>
     #define EXPORT __declspec(dllexport)
