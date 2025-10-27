@@ -17,6 +17,11 @@
       "displayName": "MQTT raspmarker",
       "description": "Contains raspmarker samples",
       "path": "Samples~/MQTT_raspmarker"
+    },
+    {
+      "displayName": "Talkies",
+      "description": "Contains talkies samples",
+      "path": "Samples~/Talkies"
     }
   ],
   "author": {
