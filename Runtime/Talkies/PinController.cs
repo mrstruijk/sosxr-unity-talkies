@@ -44,6 +44,15 @@ public class PinController : MonoBehaviour
     }
 
 
+    private void Start()
+    {
+        if (GetComponent<SafetyPin>() == null)
+        {
+            this.Warning($"You're running this without {nameof(SafetyPin)}. Is that wise?");
+        }
+    }
+
+
     private void Update()
     {
         ReadBuffer();
