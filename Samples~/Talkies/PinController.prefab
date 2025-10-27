@@ -1,0 +1,99 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &4363046771226572732
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3479322728324361952}
+  - component: {fileID: 710742859712164941}
+  - component: {fileID: 555147389088819683}
+  - component: {fileID: 983288119421743408}
+  - component: {fileID: 1788968687740425091}
+  m_Layer: 0
+  m_Name: PinController
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3479322728324361952
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363046771226572732}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &710742859712164941
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363046771226572732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cd1add31ea2c44d238373cc0e79376bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies::SerialConnector
+  m_availablePorts:
+  - /dev/cu.usbmodem21414401
+  m_selectedPortIndex: 0
+  m_portName: /dev/cu.usbmodem21414401
+  m_baudRate: 115200
+  m_isConnected: 0
+--- !u!114 &555147389088819683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363046771226572732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03df097055dc44805973e41d4cd051a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies::PinController
+  m_defaultPin: 16
+  m_serialConnector: {fileID: 710742859712164941}
+--- !u!114 &983288119421743408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363046771226572732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4a8ba68c16c4449a8df534e49b38e16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies::SafetyPin
+  m_setLowAfterSeconds: 30
+  _pinController: {fileID: 555147389088819683}
+  _safetyPin: []
+--- !u!114 &1788968687740425091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4363046771226572732}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d88ca615fb054ae0bbbe2f27e25241b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies::PinTimer
+  _controller: {fileID: 555147389088819683}
+  m_toggleTime: 0.15
+  m_pin: 16
