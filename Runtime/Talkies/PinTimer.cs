@@ -62,6 +62,8 @@ public class PinTimer : MonoBehaviour
 
     private void OnDisable()
     {
+        _controller.SetPin(m_pin, false);
+
         StopAllCoroutines();
     }
 }
