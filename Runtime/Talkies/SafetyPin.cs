@@ -15,7 +15,7 @@ public class SafetyPin : MonoBehaviour
     [SerializeField] [HideInInspector] private PinController _pinController;
     private readonly float _checkDelay = 1f;
 
-    private readonly List<float> _safetyPin = new();
+    [SerializeField] private  List<float> _safetyPin = new();
 
 
     private void OnValidate()
