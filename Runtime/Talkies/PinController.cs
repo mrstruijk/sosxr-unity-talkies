@@ -4,13 +4,14 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SOSXR.EnhancedLogger;
 using UnityEngine;
-using Button = SOSXR.SeaShark.ButtonAttribute;
+using HeaderAttribute = SOSXR.SeaShark.HeaderAttribute;
+using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 
 [RequireComponent(typeof(SerialConnector))]
 public class PinController : MonoBehaviour
 {
-    [UnityEngine.Header("Pin Control")]
+    [Header("Pin Control")]
     [SerializeField] [Range(0, 29)] private int m_defaultPin = 16;
 
     [HideInInspector] [SerializeField] private SerialConnector m_serialConnector;
