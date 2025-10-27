@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using SOSXR.EnhancedLogger;
-using SOSXR.SeaShark;
 using UnityEngine;
+using Button = SOSXR.SeaShark.ButtonAttribute;
 
 
 [RequireComponent(typeof(SerialConnector))]
