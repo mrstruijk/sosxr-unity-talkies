@@ -37,3 +37,4 @@
 - [Connector Icon](https://icon-library.com/icon/raspberry-pi-icon-png-14.html)
 
 - [GPIO icon](https://freesvg.org/raspberry-pi-gpio-diagram)
+- [Safety pin icons created by Eucalyp - Flaticon](https://www.flaticon.com/free-icons/safety-pin "safety pin icons")

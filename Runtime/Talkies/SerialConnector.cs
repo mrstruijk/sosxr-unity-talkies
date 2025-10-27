@@ -129,14 +129,8 @@ public class SerialConnector : MonoBehaviour
     }
 
 
-    private void OnApplicationQuit()
-    {
-        Disconnect();
-    }
-
-
     private void OnDestroy()
     {
-        OnApplicationQuit();
+        Disconnect();
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using SOSXR.EnhancedLogger;
@@ -18,6 +19,8 @@ public class PinController : MonoBehaviour
     private readonly byte[] readBuffer = new byte[1024];
 
     private readonly int _ledPin = 25;
+
+    private readonly List<int> _pinList = new();
 
     public event Action<int, bool> OnPinGetEvent;
     public event Action<int, bool> OnPinSetEvent;
@@ -201,6 +204,11 @@ public class PinController : MonoBehaviour
     [Button(space: 10, horizontalLine: true)]
     public void SetPin(int pin, bool value)
     {
+        if (!_pinList.Contains(pin))
+        {
+            _pinList.Add(pin);
+        }
+
         SendCommand($"SET,{pin},{(value ? 1 : 0)}");
     }
 
@@ -218,6 +226,8 @@ public class PinController : MonoBehaviour
         TogglePin(pin, (p, currentValue) =>
         {
             var newValue = !currentValue;
+
+
             SetPin(pin, newValue);
             this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
         });
@@ -272,5 +282,14 @@ public class PinController : MonoBehaviour
     private string HighLow(bool value)
     {
         return value ? "HIGH" : "LOW";
+    }
+
+
+    private void OnDisable()
+    {
+        foreach (var pin in _pinList)
+        {
+            SetPin(pin, false);
+        }
     }
 }
