@@ -49,8 +49,12 @@ public class SerialConnector : MonoBehaviour
         #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
         var cuPorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
         m_availablePorts = cuPorts;
-        #else
+        #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
         m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
+        #else
+        this.Warning("SerialConnector not yet implemented for other systems. Check back later");
+        enabled = false;
+        return;
         #endif
 
         if (m_availablePorts.Length == 0)
