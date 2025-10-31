@@ -4,66 +4,69 @@ using UnityEngine;
 using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 
-[RequireComponent(typeof(PinController))]
-public class PinTimer : MonoBehaviour
+namespace SOSXR.Talkies
 {
-    [SerializeField] [HideInInspector] private PinController _controller;
-    [SerializeField] [Range(0.15f, 5f)] private float m_toggleTime = 0.15f;
-    [SerializeField] [Range(0, 25)] private int m_pin = 16;
-
-    private Coroutine _toggleCoroutine;
-
-
-    private void OnValidate()
+    [RequireComponent(typeof(PinController))]
+    public class PinTimer : MonoBehaviour
     {
-        if (_controller == null)
+        [SerializeField] [HideInInspector] private PinController _controller;
+        [SerializeField] [Range(0.15f, 5f)] private float m_toggleTime = 0.15f;
+        [SerializeField] [Range(0, 25)] private int m_pin = 16;
+
+        private Coroutine _toggleCoroutine;
+
+
+        private void OnValidate()
         {
-            _controller = GetComponent<PinController>();
+            if (_controller == null)
+            {
+                _controller = GetComponent<PinController>();
+            }
         }
-    }
 
 
-    [Button]
-    private void ToggleOnOff()
-    {
-        if (_toggleCoroutine != null)
+        [Button]
+        private void ToggleOnOff()
         {
-            StopCoroutine(_toggleCoroutine);
+            if (_toggleCoroutine != null)
+            {
+                StopCoroutine(_toggleCoroutine);
+
+                _controller.SetPin(m_pin, false);
+
+                this.Warning("We already had a toogler running. Will turn that toggler off, but not continue from here. Toggle again to resume functionality.");
+
+                _toggleCoroutine = null;
+
+                return;
+            }
+
+            _toggleCoroutine = StartCoroutine(ToggleOnOffCR());
+        }
+
+
+        private IEnumerator ToggleOnOffCR()
+        {
+            if (!Application.isPlaying)
+            {
+                yield break;
+            }
+
+            _controller.SetPin(m_pin, true);
+
+            yield return new WaitForSeconds(m_toggleTime);
 
             _controller.SetPin(m_pin, false);
 
-            this.Warning("We already had a toogler running. Will turn that toggler off, but not continue from here. Toggle again to resume functionality.");
-
             _toggleCoroutine = null;
-
-            return;
         }
 
-        _toggleCoroutine = StartCoroutine(ToggleOnOffCR());
-    }
 
-
-    private IEnumerator ToggleOnOffCR()
-    {
-        if (!Application.isPlaying)
+        private void OnDisable()
         {
-            yield break;
+            _controller.SetPin(m_pin, false);
+
+            StopAllCoroutines();
         }
-
-        _controller.SetPin(m_pin, true);
-
-        yield return new WaitForSeconds(m_toggleTime);
-
-        _controller.SetPin(m_pin, false);
-
-        _toggleCoroutine = null;
-    }
-
-
-    private void OnDisable()
-    {
-        _controller.SetPin(m_pin, false);
-
-        StopAllCoroutines();
     }
 }
