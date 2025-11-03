@@ -257,7 +257,6 @@ MonoBehaviour:
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
   m_RequiresDepthTexture: 0
   m_RequiresColorTexture: 0
-  m_Version: 2
   m_TaaSettings:
     m_Quality: 3
     m_FrameInfluence: 0.1
@@ -265,6 +264,7 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+  m_Version: 2
 --- !u!1 &878511171
 GameObject:
   m_ObjectHideFlags: 11
@@ -296,9 +296,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scenePrefabInstances:
   - _gameObject: {fileID: 1472311453}
-    _prefab: Assets/_SOSXR/sosxr-unity-mqtt/InEditorSamples/Samples/UI.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/UI.prefab
   - _gameObject: {fileID: 1699045181}
-    _prefab: Assets/_SOSXR/sosxr-unity-mqtt/Runtime/Prefabs/MQTT_Client.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/MQTT_Client.prefab
 --- !u!4 &878511173
 Transform:
   m_ObjectHideFlags: 11
@@ -403,6 +403,55 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 3342327448645030598, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
   m_PrefabInstance: {fileID: 3456457844169784282}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &2099121528
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2099121530}
+  - component: {fileID: 2099121529}
+  m_Layer: 0
+  m_Name: MQTTFirstResponder
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2099121529
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099121528}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fa34c1dacd5b43b18769fe71d358e568, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: SOSXR.Talkies.MQTT::MQTTFirstResponder
+  m_topic: '#'
+  m_payload: 
+  m_onMessageReceived:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!4 &2099121530
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2099121528}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &3456457844169784282
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -454,6 +503,14 @@ PrefabInstance:
     - target: {fileID: 4184088834572236499, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5309040197271553151, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
+      propertyPath: m_brokerAddress
+      value: 192.168.178.90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5309040197271553151, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
+      propertyPath: m_timeoutOnConnection
+      value: 30000
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -554,3 +611,4 @@ SceneRoots:
   - {fileID: 7488810003688223254}
   - {fileID: 878511173}
   - {fileID: 3456457844169784282}
+  - {fileID: 2099121530}

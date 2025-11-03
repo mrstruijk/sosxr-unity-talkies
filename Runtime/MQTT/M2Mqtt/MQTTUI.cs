@@ -23,11 +23,11 @@ SOFTWARE.
 */
 
 
-using System;
 using System.Text;
 using SOSXR.EnhancedLogger;
 using UnityEngine;
 using UnityEngine.UI;
+
 
 namespace MQTTUnity
 {
@@ -72,10 +72,12 @@ namespace MQTTUnity
             }
         }
 
+
         private void Start()
         {
             SetUIMessage("Connecting... \n");
         }
+
 
         private void OnEnable()
         {

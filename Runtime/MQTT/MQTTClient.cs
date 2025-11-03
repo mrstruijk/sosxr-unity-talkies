@@ -26,10 +26,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using SOSXR.EnhancedLogger;
+using SOSXR.SeaShark;
 using UnityEngine;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
+
 
 
 /// <summary>
@@ -43,29 +46,30 @@ namespace MQTTUnity
     /// </summary>
     public class MQTTClient : MonoBehaviour
     {
-        [Header("MQTT broker configuration")] [Tooltip("IP address or URL of the host running the broker")] [SerializeField]
-        private string m_brokerAddress = "localhost";
+        [UnityEngine.Header("MQTT broker configuration")] [Tooltip("IP address or URL of the host running the broker")]
+        [SerializeField] private string m_brokerAddress = "localhost";
 
-        [Tooltip("Port where the broker accepts connections")] [SerializeField]
-        private int m_brokerPort = 1883;
+        [Tooltip("Port where the broker accepts connections")]
+        [SerializeField] private int m_brokerPort = 1883;
 
         [Tooltip("Use encrypted connection")] [SerializeField]
         private bool m_isEncrypted;
 
-        [Header("Connection parameters")] [Tooltip("Connection to the broker is delayed by the the given milliseconds")] [SerializeField]
-        private int m_connectionDelay = 500;
+        [UnityEngine.Header("Connection parameters")]
+        [Tooltip("Connection to the broker is delayed by the the given milliseconds")]
+        [SerializeField] [Suffix("ms")] private int m_connectionDelay = 500;
 
-        [Tooltip("Connection timeout in milliseconds")] [SerializeField]
-        private int m_timeoutOnConnection = MqttSettings.MQTT_CONNECT_TIMEOUT;
+        [Tooltip("Connection timeout in milliseconds")]
+        [SerializeField] [Suffix("ms")] private int m_timeoutOnConnection = MqttSettings.MQTT_CONNECT_TIMEOUT;
 
-        [Tooltip("Connect on startup")] [SerializeField]
-        private bool m_autoConnect;
+        [Tooltip("Connect on startup")]
+        [SerializeField] private bool m_autoConnect;
 
-        [Tooltip("UserName for the MQTT broker. Keep blank if no user name is required.")] [SerializeField]
-        private string m_MQTTUserName = string.Empty;
+        [Tooltip("UserName for the MQTT broker. Keep blank if no user name is required.")]
+        [SerializeField] private string m_MQTTUserName = string.Empty;
 
-        [Tooltip("Password for the MQTT broker. Keep blank if no password is required.")] [SerializeField]
-        private string m_MQTTPassword = string.Empty;
+        [Tooltip("Password for the MQTT broker. Keep blank if no password is required.")]
+        [SerializeField] private string m_MQTTPassword = string.Empty;
 
         private static MQTTBackend _MQTTBackend;
 
@@ -111,7 +115,7 @@ namespace MQTTUnity
         }
 
 
-        public static bool IsConnected => _MQTTBackend is { IsConnected: true };
+        public static bool IsConnected => _MQTTBackend is {IsConnected: true};
         public static Action OnConnected;
         public static Action OnDisconnected;
 
@@ -146,7 +150,7 @@ namespace MQTTUnity
         [ContextMenu(nameof(Connect))]
         public void Connect()
         {
-            if (_MQTTBackend is { IsConnected: true })
+            if (_MQTTBackend is {IsConnected: true})
             {
                 return;
             }
@@ -163,61 +167,66 @@ namespace MQTTUnity
         private IEnumerator ConnectCR()
         {
             yield return new WaitForSecondsRealtime(m_connectionDelay / 1000f);
-
-            yield return new WaitForEndOfFrame(); // leave some time to Unity to refresh the UI
+            yield return new WaitForEndOfFrame();
 
             if (_MQTTBackend == null)
             {
                 try
                 {
-#if (!UNITY_EDITOR && UNITY_WSA_10_0 && !ENABLE_IL2CPP)
-                    client = new MqttClient(brokerAddress,brokerPort,isEncrypted, isEncrypted ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None);
-#else
-                    _MQTTBackend = new MQTTBackend(m_brokerAddress, m_brokerPort, m_isEncrypted, null, null, m_isEncrypted ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None);
-#endif
+                    _MQTTBackend = new MQTTBackend(m_brokerAddress, m_brokerPort, m_isEncrypted, null, null,
+                        m_isEncrypted ? MqttSslProtocols.SSLv3 : MqttSslProtocols.None);
                 }
                 catch (Exception e)
                 {
                     _MQTTBackend = null;
-
-                    this.Error($"Connection to {m_brokerAddress}:{m_brokerPort} failed: {e.Message}");
+                    this.Error($"Initialization failed: {e.Message}");
 
                     yield break;
                 }
             }
-            else if (_MQTTBackend.IsConnected)
-            {
-                yield break;
-            }
-
-            yield return new WaitForEndOfFrame(); // leave some time to Unity to refresh the UI
-            yield return new WaitForEndOfFrame();
-
-            _MQTTBackend.Settings.TimeoutOnConnection = m_timeoutOnConnection;
-            var clientId = Guid.NewGuid().ToString();
-
-            try
-            {
-                _MQTTBackend.Connect(clientId, m_MQTTUserName, m_MQTTPassword);
-            }
-            catch (Exception e)
-            {
-                _MQTTBackend = null;
-
-                this.Error($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n (check client parameters: encryption, address/port, username/password):\n{e}");
-                OnDisconnected?.Invoke();
-
-                yield break;
-            }
 
             if (_MQTTBackend.IsConnected)
+            {
+                yield break;
+            }
+
+            var clientId = Guid.NewGuid().ToString();
+            var connectResult = false;
+            string errorMsg = null;
+
+            // Run connect in a background thread
+            var connectThread = new Thread(() =>
+            {
+                try
+                {
+                    _MQTTBackend.Settings.TimeoutOnConnection = m_timeoutOnConnection;
+                    _MQTTBackend.Connect(clientId, m_MQTTUserName, m_MQTTPassword);
+                    connectResult = _MQTTBackend.IsConnected;
+                }
+                catch (Exception e)
+                {
+                    connectResult = false;
+                    errorMsg = e.Message;
+                }
+            });
+
+            connectThread.Start();
+
+            // Wait for thread to finish but yield each frame
+            while (connectThread.IsAlive)
+            {
+                yield return null;
+            }
+
+            if (connectResult)
             {
                 BackendIsConnected();
             }
             else
             {
+                _MQTTBackend = null;
+                this.Error($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n{errorMsg}");
                 OnDisconnected?.Invoke();
-                this.Error($"Connection failed to {m_brokerAddress}:{m_brokerPort}");
             }
 
             _connect = null;
@@ -253,7 +262,7 @@ namespace MQTTUnity
             foreach (var topic in _pendingUnsubscriptions)
             {
                 this.Verbose("Unsubscribing from pending topic: " + topic);
-                _MQTTBackend.Unsubscribe(new[] { topic });
+                _MQTTBackend.Unsubscribe(new[] {topic});
             }
 
             this.Info($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
@@ -271,7 +280,7 @@ namespace MQTTUnity
             foreach (var (topic, qosLevel) in _pendingSubscriptions)
             {
                 this.Verbose("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
-                _MQTTBackend.Subscribe(new[] { topic }, new[] { qosLevel });
+                _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
             }
 
             this.Info($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
@@ -309,9 +318,9 @@ namespace MQTTUnity
                 callbacks = new List<Action<string, byte[]>>();
                 _topicCallbacks[topic] = callbacks;
 
-                if (_MQTTBackend is { IsConnected: true })
+                if (_MQTTBackend is {IsConnected: true})
                 {
-                    _MQTTBackend.Subscribe(new[] { topic }, new[] { qosLevel });
+                    _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
                     Log.Static($"Subscribed to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
                 }
                 else
@@ -351,9 +360,9 @@ namespace MQTTUnity
 
             _topicCallbacks.Remove(topic);
 
-            if (_MQTTBackend is { IsConnected: true })
+            if (_MQTTBackend is {IsConnected: true})
             {
-                _MQTTBackend.Unsubscribe(new[] { topic });
+                _MQTTBackend.Unsubscribe(new[] {topic});
                 Log.Static($"Unsubscribed from topic: {topic}", LogLevel.Verbose);
             }
             else
@@ -376,7 +385,7 @@ namespace MQTTUnity
         {
             var mssg = Encoding.UTF8.GetString(payload);
 
-            if (_MQTTBackend is { IsConnected: true })
+            if (_MQTTBackend is {IsConnected: true})
             {
                 _MQTTBackend.Publish(topic, payload, qosLevel, retain);
                 Log.Static($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})", LogLevel.Verbose);
@@ -581,7 +590,7 @@ namespace MQTTUnity
         }
 
 
-#if ((!UNITY_EDITOR && UNITY_WSA_10_0 || !UNITY_EDITOR && UNITY_ANDROID))
+        #if ((!UNITY_EDITOR && UNITY_WSA_10_0 || !UNITY_EDITOR && UNITY_ANDROID))
         private void OnApplicationFocus(bool focus)
         {
             // On UWP 10 (HoloLeng) / Android we cannot tell whether the application actually got closed or just minimized.
@@ -595,6 +604,6 @@ namespace MQTTUnity
                 DisconnectImmediately();
             }
         }
-#endif
+        #endif
     }
 }

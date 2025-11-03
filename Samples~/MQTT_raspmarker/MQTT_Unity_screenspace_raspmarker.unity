@@ -358,9 +358,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scenePrefabInstances:
   - _gameObject: {fileID: 1472311453}
-    _prefab: Assets/_SOSXR/sosxr-unity-mqtt/Prefabs/UI.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/UI.prefab
   - _gameObject: {fileID: 1699045181}
-    _prefab: Assets/_SOSXR/sosxr-unity-mqtt/Prefabs/MQTT_Client.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/MQTT_Client.prefab
 --- !u!4 &878511173
 Transform:
   m_ObjectHideFlags: 11
@@ -565,6 +565,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5309040197271553151, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
+      propertyPath: m_brokerAddress
+      value: 192.168.178.90
+      objectReference: {fileID: 0}
+    - target: {fileID: 5309040197271553151, guid: 34a50bcd0c1684a9bb991f0321ab2048, type: 3}
+      propertyPath: m_timeoutOnConnection
+      value: 10000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -589,10 +597,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 403029253221640354, guid: e76dc1b4af5e943778699318a358351c, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 554237909982686764, guid: e76dc1b4af5e943778699318a358351c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -657,18 +661,6 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 410082212}
-    - target: {fileID: 7296516503564723578, guid: e76dc1b4af5e943778699318a358351c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: TestSendingIndex
-      objectReference: {fileID: 0}
-    - target: {fileID: 7296516503564723578, guid: e76dc1b4af5e943778699318a358351c, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
-      value: SOSXR.MQTT.raspmarker.RaspmarkerTester, SOSXR.MQTT.raspmarker
-      objectReference: {fileID: 0}
-    - target: {fileID: 7326294791735907317, guid: e76dc1b4af5e943778699318a358351c, type: 3}
-      propertyPath: m_Text
-      value: Test Rasp
-      objectReference: {fileID: 0}
     - target: {fileID: 9134606170972946654, guid: e76dc1b4af5e943778699318a358351c, type: 3}
       propertyPath: m_Name
       value: UI
