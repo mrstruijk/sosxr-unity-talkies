@@ -18,6 +18,7 @@ namespace SOSXR.Talkies
 
         public bool IsConnected => m_isConnected;
 
+        // Test
 
         // Native plugin imports
         [DllImport("SerialPlugin")]
@@ -49,7 +50,7 @@ namespace SOSXR.Talkies
         public void RefreshPorts()
         {
             #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-                m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
+            m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
             #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
             #elif UNITY_ANDROID
@@ -65,6 +66,7 @@ namespace SOSXR.Talkies
                 this.Error("No serial ports found. Cannot continue.");
                 m_portName = string.Empty;
                 enabled = false;
+
                 return;
             }
 
