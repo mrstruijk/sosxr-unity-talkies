@@ -213,8 +213,8 @@ Transform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &418954520 stripped
 GameObject:
-  m_CorrespondingSourceObject: {fileID: 4363046771226572732, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-  m_PrefabInstance: {fileID: 8352304640609681280}
+  m_CorrespondingSourceObject: {fileID: 8470166727728662511, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
+  m_PrefabInstance: {fileID: 4883334099897245002}
   m_PrefabAsset: {fileID: 0}
 --- !u!1 &886288747
 GameObject:
@@ -247,7 +247,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityPlayModeSaver::Framework.Utils.UnityPlayModeSaverSceneUtils
   _scenePrefabInstances:
   - _gameObject: {fileID: 418954520}
-    _prefab: Assets/_SOSXR/sosxr-unity-talkies/InEditorSamples/Talkies/PinController.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/InEditorSamples/Talkies/PinController_Android
+      Variant.prefab
 --- !u!4 &886288749
 Transform:
   m_ObjectHideFlags: 11
@@ -390,7 +391,7 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!1001 &8352304640609681280
+--- !u!1001 &4883334099897245002
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -398,80 +399,60 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_serialConnector
-      value: 
+    - target: {fileID: 8470166727728662511, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
+      propertyPath: m_Name
+      value: PinController_Android
       objectReference: {fileID: 0}
-    - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_debugToggleRange.x
-      value: 0.1
-      objectReference: {fileID: 0}
-    - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_debugToggleRange.y
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_EditorClassIdentifier
-      value: SOSXR.Talkies::SOSXR.Talkies.PinController
-      objectReference: {fileID: 0}
-    - target: {fileID: 710742859712164941, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_Enabled
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalPosition.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalRotation.w
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalRotation.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalRotation.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 3479322728324361952, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+    - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4363046771226572732, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
-      propertyPath: m_Name
-      value: PinController
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+  m_SourcePrefab: {fileID: 100100000, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 126785206}
   - {fileID: 1667327327}
-  - {fileID: 8352304640609681280}
+  - {fileID: 4883334099897245002}
   - {fileID: 886288749}

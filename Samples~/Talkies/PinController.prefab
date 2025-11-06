@@ -47,10 +47,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cd1add31ea2c44d238373cc0e79376bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SOSXR.Talkies::SerialConnector
-  m_availablePorts:
-  - /dev/cu.usbmodem101
+  m_availablePorts: []
   m_selectedPortIndex: 0
-  m_portName: /dev/cu.usbmodem101
+  m_portName: 
   m_baudRate: 115200
   m_isConnected: 0
 --- !u!114 &555147389088819683
@@ -66,7 +65,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: SOSXR.Talkies::SOSXR.Talkies.PinController
   m_defaultPin: 16
-  m_serialConnector: {fileID: 710742859712164941}
   m_debugToggleLED: 1
   m_debugToggleRange: {x: 0.1, y: 0.5}
 --- !u!114 &983288119421743408

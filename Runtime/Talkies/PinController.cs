@@ -13,13 +13,11 @@ using Random = UnityEngine.Random;
 
 namespace SOSXR.Talkies
 {
-    [RequireComponent(typeof(SerialConnector))]
+    [RequireComponent(typeof(ISerialConnect))]
     public class PinController : MonoBehaviour
     {
         [Header("Pin Control")]
         [SerializeField] [Range(0, 29)] private int m_defaultPin = 16;
-
-        [HideInInspector] [SerializeField] private SerialConnector m_serialConnector;
 
         [Header("Debug")]
         [SerializeField] private bool m_debugToggleLED = true;
@@ -31,6 +29,8 @@ namespace SOSXR.Talkies
         private readonly int _ledPin = 25;
 
         private readonly List<int> _pinList = new();
+
+        private ISerialConnect _connector;
 
         public event Action<int, bool> OnPinGetEvent;
         public event Action<int, bool> OnPinSetEvent;
@@ -46,10 +46,7 @@ namespace SOSXR.Talkies
 
         private void OnValidate()
         {
-            if (m_serialConnector == null)
-            {
-                m_serialConnector = GetComponent<SerialConnector>();
-            }
+            _connector ??= GetComponent<ISerialConnect>();
         }
 
 
@@ -88,7 +85,7 @@ namespace SOSXR.Talkies
 
         private void ReadBuffer()
         {
-            if (!m_serialConnector.IsConnected)
+            if (!_connector.IsConnected)
             {
                 this.Warning("We're not connected! Cannot continue");
 
@@ -165,7 +162,7 @@ namespace SOSXR.Talkies
 
         private void SendCommand(string command)
         {
-            if (!m_serialConnector.IsConnected)
+            if (!_connector.IsConnected)
             {
                 this.Warning($"Not connected. Cannot send: {command}");
 

@@ -1,4 +1,5 @@
 // SerialPlugin.cpp 
+// Rename file to SerialPlugin.cpp (stored without because otherwise Unity cannot build)
 // Compile as shared library: .dll (Windows) / .bundle (macOS) which needs be placed in a /Plugins folder inside Unity Assets folder. 
 // Example compilation commands: 
 // Windows (Visual Studio CPP Build Tools), from https://visualstudio.microsoft.com/visual-cpp-build-tools/:
