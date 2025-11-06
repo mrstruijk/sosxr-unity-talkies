@@ -1,11 +1,14 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
 using SOSXR.EnhancedLogger;
+using SOSXR.SeaShark;
 using UnityEngine;
 using HeaderAttribute = SOSXR.SeaShark.HeaderAttribute;
 using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
+using Random = UnityEngine.Random;
 
 
 namespace SOSXR.Talkies
@@ -17,6 +20,10 @@ namespace SOSXR.Talkies
         [SerializeField] [Range(0, 29)] private int m_defaultPin = 16;
 
         [HideInInspector] [SerializeField] private SerialConnector m_serialConnector;
+
+        [Header("Debug")]
+        [SerializeField] private bool m_debugToggleLED = true;
+        [SerializeField] [ShowIf(nameof(m_debugToggleLED))] private Vector2 m_debugToggleRange = new(0.1f, 0.5f);
 
         private readonly StringBuilder receiveBuffer = new();
         private readonly byte[] readBuffer = new byte[1024];
@@ -51,6 +58,24 @@ namespace SOSXR.Talkies
             if (GetComponent<SafetyPin>() == null)
             {
                 this.Warning($"You're running this without {nameof(SafetyPin)}. Is that wise?");
+            }
+
+            if (m_debugToggleLED && m_debugToggleRange != Vector2.zero)
+            {
+                StartCoroutine(DebugToggleCR());
+            }
+        }
+
+
+        private IEnumerator DebugToggleCR()
+        {
+            for (;;)
+            {
+                var duration = Random.Range(m_debugToggleRange.x, m_debugToggleRange.y);
+
+                yield return new WaitForSeconds(duration);
+
+                ToggleLED();
             }
         }
 
@@ -303,6 +328,8 @@ namespace SOSXR.Talkies
             {
                 SetPin(pin, false);
             }
+
+            StopAllCoroutines();
         }
     }
 }

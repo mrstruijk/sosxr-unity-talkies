@@ -18,7 +18,6 @@ namespace SOSXR.Talkies
 
         public bool IsConnected => m_isConnected;
 
-        // Test
 
         // Native plugin imports
         [DllImport("SerialPlugin")]
@@ -35,10 +34,14 @@ namespace SOSXR.Talkies
         }
 
 
-        private void Start()
+        private void Awake()
         {
             RefreshPorts();
+        }
 
+
+        private void Start()
+        {
             if (m_availablePorts.Length > 0)
             {
                 ConnectOverSerial();
@@ -50,7 +53,7 @@ namespace SOSXR.Talkies
         public void RefreshPorts()
         {
             #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
+                m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
             #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
             #elif UNITY_ANDROID
@@ -63,9 +66,13 @@ namespace SOSXR.Talkies
 
             if (m_availablePorts.Length == 0)
             {
-                this.Error("No serial ports found. Cannot continue.");
                 m_portName = string.Empty;
-                enabled = false;
+
+                if (Application.isPlaying)
+                {
+                    this.Error("No serial ports found. Cannot continue. This now runs in Awake: was that too soon?");
+                    enabled = false;
+                }
 
                 return;
             }
