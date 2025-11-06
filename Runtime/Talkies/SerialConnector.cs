@@ -49,27 +49,39 @@ namespace SOSXR.Talkies
         public void RefreshPorts()
         {
             #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            var cuPorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
-            m_availablePorts = cuPorts;
+                m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
             #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
-        m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
+                m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
+            #elif UNITY_ANDROID
+                GetAndroidPort();
             #else
-        this.Warning("SerialConnector not yet implemented for other systems. Check back later");
-        enabled = false;
-        return;
+                this.Error("SerialConnector not yet implemented for this platform. Cannot continue.");
+                enabled = false;
+                return;
             #endif
 
             if (m_availablePorts.Length == 0)
             {
-                this.Warning("No serial ports found.");
+                this.Error("No serial ports found. Cannot continue.");
                 m_portName = string.Empty;
-
+                enabled = false;
                 return;
             }
 
             m_selectedPortIndex = Mathf.Clamp(m_selectedPortIndex, 0, m_availablePorts.Length - 1);
             m_portName = m_availablePorts[m_selectedPortIndex];
             this.Verbose($"Detected {m_availablePorts.Length} port(s). Selected: {m_portName}");
+        }
+
+
+        /// <summary>
+        ///     For Android / Quest, we're using https://github.com/mik3y/usb-serial-for-android under the hood.
+        ///     On Android/Quest, you don’t pass the port name to the native plugin; SerialOpen(portName, baudRate) just ignores the string. The dummy portname is just for your UI and logging, so the existing SerialConnector code works without branching all over the place. The hoho plugin automatically detects the Pico via USB host API.
+        /// </summary>
+        private void GetAndroidPort()
+        {
+            m_availablePorts = new[] {"DUMMY-Android-USB-Port"}; // Dummy placeholder
+            m_portName = m_availablePorts[0];
         }
 
 
