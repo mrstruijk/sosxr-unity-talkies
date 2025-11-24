@@ -1,59 +1,49 @@
-# gpio_controller.py
-
 from machine import Pin, PWM
-import sys
-import utime
+import sys, utime
 
 class GPIOController:
     def __init__(self):
-        self.pins = {}
-        self.pwms = {}
-        print("Note: The first connected terminal receives flushed messages. This means that if eg. Thonny is showing GET/SET commands in the console, those commands do not reach their final destination!")
+        self.pins = {}  # pin_num -> Pin or PWM object
 
-    '''
-    This also will put the pin in the dictionary, if it is not already in there.
-    '''
-    def get_pin_from_dictionary(self, pin_num: int) -> Pin:
-        return self.pins.setdefault(pin_num, Pin(pin_num, Pin.OUT))
+    def get_pin(self, pin_num: int):
+        if pin_num not in self.pins or isinstance(self.pins[pin_num], PWM):
+            self.pins[pin_num] = Pin(pin_num, mode=Pin.OUT)
+        return self.pins[pin_num]
 
+    def get_pwm(self, pin_num: int):
+        if pin_num not in self.pins or not isinstance(self.pins[pin_num], PWM):
+            self.pins[pin_num] = PWM(Pin(pin_num))
+        return self.pins[pin_num]
 
-    def get_pwm_from_dictionary(self, pin_num: int) -> PWM:
-        return self.pwms.setdefault(pin_num, PWM(Pin(pin_num)))
+    def set_pin(self, pin_num: int, value):
+        self.get_pin(pin_num).value(1 if value else 0)
 
-    '''
-    Set the pin either high or low
-    '''
-    def set_pin(self, pin_num: int, value: bool):
-        value_int = 1 if value else 0 # is safer because some boards like this better.
-        self.get_pin_from_dictionary(pin_num).value(value_int)
+    def get_pin_value(self, pin_num: int):
+        pin = self.pins.get(pin_num)
+        if pin is None:
+            return 0
+        if isinstance(pin, PWM):
+            # scale 0–65535 → 0–100%
+            return pin.duty_u16() * 100 // 65535
+        return pin.value()
 
-
-    def set_pwm_percent(self, pin_num: int, freq: int, duty_percent: int):
-        p = self.get_pwm_from_dictionary(pin_num)
-        p.freq(freq)
-        duty_u16 = int(duty_percent / 100 * 65535)
-        p.duty_u16(duty_u16)
-
-
-    '''
-    Get the current pin state (is the pin set HIGH or LOW?)
-    '''
-    def get_pin_current_value(self, pin_num: int) -> int:
-        return self.get_pin_from_dictionary(pin_num).value()
+    def set_pwm(self, pin_num: int, freq: int, duty_percent: int):
+        pwm = self.get_pwm(pin_num)
+        pwm.freq(freq)
+        # scale 0–100% → 0–65535
+        duty_u16 = max(0, min(100, duty_percent)) * 65535 // 100
+        pwm.duty_u16(duty_u16)
 
 
-    '''
-    Send information out via stdout.
-    '''
+    def stop_pwm(self, pin_num: int):
+        pwm = self.pins.get(pin_num)
+        if isinstance(pwm, PWM):
+            pwm.duty_u16(0)  # just stop output
+
+
     def send_line(self, line: str):
         sys.stdout.write(line + "\n")
 
-
-    '''
-    Read the commands we received via stdin, and act accordingly: 
-    - Do we need to set a pin high/low?
-    - Do we need to provide info on current state of pin?
-    '''
     def handle_command(self, line: str):
         parts = line.strip().split(',')
         if not parts or not parts[0]:
@@ -63,29 +53,32 @@ class GPIOController:
 
         try:
             if cmd == "SET" and len(parts) >= 3:
-                pin_num, new_value = map(int, parts[1:3])
-                self.set_pin(pin_num, new_value)
-                self.send_line(f"OK,SET,{pin_num},{new_value}")
-
-            elif cmd == "PWMSET" and len(parts) >= 4:
-                pin_num = int(parts[1])
-                freq = int(parts[2])
-                duty = int(parts[3])
-                self.set_pwm_percent(pin_num, freq, duty)
-                self.send_line(f"OK,PWMSET,{pin_num},{freq},{duty}")
+                pin_num, val = map(int, parts[1:3])
+                self.set_pin(pin_num, val)
+                self.send_line(f"OK,SET,{pin_num},{val}")
 
             elif cmd == "GET" and len(parts) >= 2:
                 pin_num = int(parts[1])
-                current_value = self.get_pin_current_value(pin_num)
-                self.send_line(f"OK,GET,{pin_num},{current_value}")
+                val = self.get_pin_value(pin_num)
+                self.send_line(f"OK,GET,{pin_num},{val}")
 
             elif cmd == "GETALL":
                 if not self.pins:
                     self.send_line("OK,NO_PINS_SET")
                 else:
-                    for pin_num, pin in self.pins.items():
-                        current_value = pin.value()
-                        self.send_line(f"OK,GET,{pin_num},{current_value}")
+                    for n, p in self.pins.items():
+                        val = p.duty_u16() if isinstance(p, PWM) else p.value()
+                        self.send_line(f"OK,GET,{n},{val}")
+
+            elif cmd == "PWMSET" and len(parts) >= 4:
+                pin_num, freq, duty = map(int, parts[1:4])
+                self.set_pwm(pin_num, freq, duty)
+                self.send_line(f"OK,PWMSET,{pin_num},{freq},{duty}")
+
+            elif cmd == "PWMSTOP" and len(parts) >= 2:
+                pin_num = int(parts[1])
+                self.stop_pwm(pin_num)
+                self.send_line(f"OK,PWMSTOP,{pin_num}")
 
             elif cmd == "PING":
                 self.send_line("OK,PONG,64,I_VALUE_YOU")
@@ -111,17 +104,16 @@ class GPIOController:
                 buf += c
 
     def cleanup(self):
-        for p in self.pwms.values():
-            p.deinit()
-        print("All PWM pins disabled")
         for pin in self.pins.values():
-            pin.off()
-        print("All GPIO pins set low.")
+            if isinstance(pin, PWM):
+                pin.deinit()
+            else:
+                pin.off()
 
 
-if __name__ == "__main__":
-    gpio = GPIOController()
-    try:
-        gpio.run()
-    except KeyboardInterrupt:
-        gpio.cleanup()
+    if __name__ == "__main__": 
+        gpio = GPIOController() 
+        try: 
+            gpio.run() 
+        except KeyboardInterrupt: 
+            gpio.cleanup()
