@@ -145,13 +145,15 @@ namespace SOSXR.Talkies
             {
                 var pin = int.Parse(parts[2]);
                 var value = int.Parse(parts[3]);
-                OnPinSet(pin, value == 1);
+                var boolValue = value == 1;
+                OnPinSet(pin, boolValue);
             }
             else if (command == "GET" && parts.Length >= 4)
             {
                 var pin = int.Parse(parts[2]);
                 var value = int.Parse(parts[3]);
-                OnPinGet(pin, value == 1);
+                var boolValue = value == 1;
+                OnPinGet(pin, boolValue);
             }
             else // This should include the PING/PONG debug response
             {
@@ -267,7 +269,6 @@ namespace SOSXR.Talkies
             });
         }
 
-    
 
         private void OnPinSet(int pin, bool value)
         {

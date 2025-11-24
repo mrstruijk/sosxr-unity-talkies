@@ -1,12 +1,13 @@
 # gpio_controller.py
 
-from machine import Pin
+from machine import Pin, PWM
 import sys
 import utime
 
 class GPIOController:
     def __init__(self):
         self.pins = {}
+        self.pwms = {}
         print("Note: The first connected terminal receives flushed messages. This means that if eg. Thonny is showing GET/SET commands in the console, those commands do not reach their final destination!")
 
     '''
@@ -15,6 +16,10 @@ class GPIOController:
     def get_pin_from_dictionary(self, pin_num: int) -> Pin:
         return self.pins.setdefault(pin_num, Pin(pin_num, Pin.OUT))
 
+
+    def get_pwm_from_dictionary(self, pin_num: int) -> PWM:
+        return self.pwms.setdefault(pin_num, PWM(Pin(pin_num)))
+
     '''
     Set the pin either high or low
     '''
@@ -22,11 +27,20 @@ class GPIOController:
         value_int = 1 if value else 0 # is safer because some boards like this better.
         self.get_pin_from_dictionary(pin_num).value(value_int)
 
+
+    def set_pwm_percent(self, pin_num: int, freq: int, duty_percent: int):
+        p = self.get_pwm_from_dictionary(pin_num)
+        p.freq(freq)
+        duty_u16 = int(duty_percent / 100 * 65535)
+        p.duty_u16(duty_u16)
+
+
     '''
     Get the current pin state (is the pin set HIGH or LOW?)
     '''
     def get_pin_current_value(self, pin_num: int) -> int:
         return self.get_pin_from_dictionary(pin_num).value()
+
 
     '''
     Send information out via stdout.
@@ -36,7 +50,7 @@ class GPIOController:
 
 
     '''
-    Read the commands, and act accordingly: 
+    Read the commands we received via stdin, and act accordingly: 
     - Do we need to set a pin high/low?
     - Do we need to provide info on current state of pin?
     '''
@@ -52,6 +66,13 @@ class GPIOController:
                 pin_num, new_value = map(int, parts[1:3])
                 self.set_pin(pin_num, new_value)
                 self.send_line(f"OK,SET,{pin_num},{new_value}")
+
+            elif cmd == "PWMSET" and len(parts) >= 4:
+                pin_num = int(parts[1])
+                freq = int(parts[2])
+                duty = int(parts[3])
+                self.set_pwm_percent(pin_num, freq, duty)
+                self.send_line(f"OK,PWMSET,{pin_num},{freq},{duty}")
 
             elif cmd == "GET" and len(parts) >= 2:
                 pin_num = int(parts[1])
@@ -90,6 +111,9 @@ class GPIOController:
                 buf += c
 
     def cleanup(self):
+        for p in self.pwms.values():
+            p.deinit()
+        print("All PWM pins disabled")
         for pin in self.pins.values():
             pin.off()
         print("All GPIO pins set low.")
