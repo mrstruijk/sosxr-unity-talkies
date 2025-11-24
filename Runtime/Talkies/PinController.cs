@@ -267,6 +267,7 @@ namespace SOSXR.Talkies
             });
         }
 
+    
 
         private void OnPinSet(int pin, bool value)
         {

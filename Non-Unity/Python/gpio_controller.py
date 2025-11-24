@@ -1,37 +1,45 @@
+# gpio_controller.py
+
 from machine import Pin
 import sys
 import utime
 
 class GPIOController:
-    def __init__(self, feedback_pin=25):
+    def __init__(self):
         self.pins = {}
-        self.feedback_pin = feedback_pin
-        print("Note: only the first connected terminal receives flushed messages.")
+        print("Note: The first connected terminal receives flushed messages. This means that if eg. Thonny is showing GET/SET commands in the console, those commands do not reach their final destination!")
 
-    def get_pin(self, pin_num: int) -> Pin:
+    '''
+    This also will put the pin in the dictionary, if it is not already in there.
+    '''
+    def get_pin_from_dictionary(self, pin_num: int) -> Pin:
         return self.pins.setdefault(pin_num, Pin(pin_num, Pin.OUT))
 
-    def blink_feedback(self, times=3, duration_ms=50):
-        """Briefly flash the feedback LED without permanently changing its state"""
-        if self.feedback_pin not in self.pins:
-            # Feedback pin not yet controlled, skip flashing
-            return
-        
-        pin = self.pins[self.feedback_pin]
-        original_state = pin.value()
-        
-        for _ in range(times):
-            pin.on()
-            utime.sleep_ms(duration_ms)
-            pin.off()
-            utime.sleep_ms(duration_ms)
-        
-        pin.value(original_state) # Restore original state
+    '''
+    Set the pin either high or low
+    '''
+    def set_pin(self, pin_num: int, value: bool):
+        value_int = 1 if value else 0 # is safer because some boards like this better.
+        self.get_pin_from_dictionary(pin_num).value(value_int)
 
+    '''
+    Get the current pin state (is the pin set HIGH or LOW?)
+    '''
+    def get_pin_current_value(self, pin_num: int) -> int:
+        return self.get_pin_from_dictionary(pin_num).value()
+
+    '''
+    Send information out via stdout.
+    '''
     def send_line(self, line: str):
         sys.stdout.write(line + "\n")
-        # self.blink_feedback(3, 30)  # 3 quick blinks, 30ms each
 
+
+    '''
+    Read the commands, and act accordingly: 
+    - Do we need to set a pin high/low?
+    - Do we need to provide info on current state of pin?
+    '''
     def handle_command(self, line: str):
         parts = line.strip().split(',')
         if not parts or not parts[0]:
@@ -41,21 +49,22 @@ class GPIOController:
 
         try:
             if cmd == "SET" and len(parts) >= 3:
-                pin_num, value = map(int, parts[1:3])
-                self.get_pin(pin_num).value(value)
-                self.send_line(f"OK,SET,{pin_num},{value}")
+                pin_num, new_value = map(int, parts[1:3])
+                self.set_pin(pin_num, new_value)
+                self.send_line(f"OK,SET,{pin_num},{new_value}")
 
             elif cmd == "GET" and len(parts) >= 2:
                 pin_num = int(parts[1])
-                value = self.get_pin(pin_num).value()
-                self.send_line(f"OK,GET,{pin_num},{value}")
+                current_value = self.get_pin_current_value(pin_num)
+                self.send_line(f"OK,GET,{pin_num},{current_value}")
 
             elif cmd == "GETALL":
                 if not self.pins:
                     self.send_line("OK,NO_PINS_SET")
                 else:
                     for pin_num, pin in self.pins.items():
-                        self.send_line(f"OK,GET,{pin_num},{pin.value()}")
+                        current_value = pin.value()
+                        self.send_line(f"OK,GET,{pin_num},{current_value}")
 
             elif cmd == "PING":
                 self.send_line("OK,PONG,64,I_VALUE_YOU")
@@ -71,6 +80,7 @@ class GPIOController:
         while True:
             c = sys.stdin.read(1)
             if not c:
+                utime.sleep_ms(1)
                 continue
             if c == '\n':
                 if buf:
@@ -86,7 +96,7 @@ class GPIOController:
 
 
 if __name__ == "__main__":
-    gpio = GPIOController(feedback_pin=25)
+    gpio = GPIOController()
     try:
         gpio.run()
     except KeyboardInterrupt:
