@@ -106,7 +106,7 @@ EXPORT int SerialWrite(unsigned char position, unsigned char speed) {
 // SerialReadInternal
 // --------------------
 
-EXPORT int SerialReadInternal(unsigned char* buffer, int bufferSize) {
+int SerialReadInternal(unsigned char* buffer, int bufferSize) {
     if (bufferSize <= 0) return 0;
 
     DWORD bytesRead;

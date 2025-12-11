@@ -32,6 +32,6 @@ EXPORT int SerialRead(unsigned char* position, unsigned char* speed);
 
 // Internal functions for raw read/write operations
 int SerialWriteInternal(const unsigned char* data, int length);
-EXPORT int SerialReadInternal(unsigned char* buffer, int bufferSize);
+int SerialReadInternal(unsigned char* buffer, int bufferSize);
 
 #endif // SERIAL_PLUGIN_H

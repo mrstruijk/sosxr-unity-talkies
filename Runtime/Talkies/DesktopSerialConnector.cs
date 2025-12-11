@@ -81,10 +81,6 @@ namespace SOSXR.Talkies
             m_isConnected = false;
         }
 
-
-        // Native plugin imports
-
-
         [DllImport("SerialPlugin")]
         private static extern int SerialOpen(string portName, int baudRate, bool debug);
 
