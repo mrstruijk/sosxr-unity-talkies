@@ -1,228 +1,233 @@
 // SerialPlugin.cpp 
-// Rename file to SerialPlugin.cpp (stored without because otherwise Unity cannot build)
+// 
+// Rename file to SerialPlugin.cpp (stored without because otherwise Unity cannot build) 
 // Compile as shared library: .dll (Windows) / .bundle (macOS) which needs be placed in a /Plugins folder inside Unity Assets folder. 
+//
 // Example compilation commands: 
-// Windows (Visual Studio CPP Build Tools), from https://visualstudio.microsoft.com/visual-cpp-build-tools/:
+//
+// Windows (Visual Studio CPP Build Tools), from https://visualstudio.microsoft.com/visual-cpp-build-tools/: 
 // cl /EHsc /MD /LD SerialPlugin.cpp /Fe:SerialPlugin.dll
+//
 // macOS (clang++):
 // clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin.cpp -framework IOKit -framework CoreFoundation
+//
+// macOS (inc source file handling)
+// cp SerialPlugin SerialPlugin.cpp && clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin.cpp -framework IOKit -framework CoreFoundation && rm SerialPlugin.cpp
 
 #ifdef _WIN32
-    #include <windows.h>
-    #define EXPORT __declspec(dllexport)
+#include <windows.h>
 #else
-    #include <fcntl.h>
-    #include <unistd.h>
-    #include <termios.h>
-    #include <string.h>
-    #include <errno.h>
-    #define EXPORT __attribute__((visibility("default")))
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 #endif
 
-#include <stdio.h>
 #include <iostream>
 
-#define DEBUG_SERIAL 1
+#define EXPORT extern "C"
 
-extern "C" {
+// --------------------
+// State
+// --------------------
 
 #ifdef _WIN32
-    static HANDLE hSerial = INVALID_HANDLE_VALUE;
+static HANDLE fd = INVALID_HANDLE_VALUE;
 #else
-    static int fd = -1;
+static int fd = -1;
 #endif
 
-    EXPORT int SerialOpen(const char* portName, int baudRate) {
+static bool debugSerial = false;
+
+// --------------------
+// Helpers
+// --------------------
+
+#ifndef _WIN32
+static speed_t baudToSpeed(int baudRate) {
+    switch (baudRate) {
+        case 4800:   return B4800;
+        case 9600:   return B9600;
+        case 19200:  return B19200;
+        case 38400:  return B38400;
+        case 57600:  return B57600;
+        case 115200: return B115200;
+        default:     return B115200;
+    }
+}
+#endif
+
+// --------------------
+// SerialOpen
+// --------------------
+
+EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
+    debugSerial = debug;
+
 #ifdef _WIN32
-        hSerial = CreateFileA(portName,
-            GENERIC_READ | GENERIC_WRITE,
-            0, NULL, OPEN_EXISTING,
-            FILE_ATTRIBUTE_NORMAL, NULL);
-
-        if (hSerial == INVALID_HANDLE_VALUE) return 0;
-
-        DCB dcbSerialParams = {0};
-        dcbSerialParams.DCBlength = sizeof(dcbSerialParams);
-
-        if (!GetCommState(hSerial, &dcbSerialParams)) {
-            CloseHandle(hSerial);
-            return 0;
-        }
-
-        dcbSerialParams.BaudRate = baudRate;
-        dcbSerialParams.ByteSize = 8;
-        dcbSerialParams.StopBits = ONESTOPBIT;
-        dcbSerialParams.Parity = NOPARITY;
-
-        if (!SetCommState(hSerial, &dcbSerialParams)) {
-            CloseHandle(hSerial);
-            return 0;
-        }
-
-        COMMTIMEOUTS timeouts = {0};
-        timeouts.ReadIntervalTimeout = 50;
-        timeouts.ReadTotalTimeoutConstant = 50;
-        timeouts.ReadTotalTimeoutMultiplier = 10;
-        timeouts.WriteTotalTimeoutConstant = 50;
-        timeouts.WriteTotalTimeoutMultiplier = 10;
-
-        if (!SetCommTimeouts(hSerial, &timeouts)) {
-            CloseHandle(hSerial);
-            return 0;
-        }
-
-        return 1;
-#else
-        // Open with blocking mode initially
-        fd = open(portName, O_RDWR | O_NOCTTY);
-        if (fd == -1) {
-            if (DEBUG_SERIAL) std::cerr << "Failed to open " << portName << ": " << strerror(errno) << std::endl;
-            return 0;
-        }
-
-        struct termios options;
-        if (tcgetattr(fd, &options) == -1) {
-            if (DEBUG_SERIAL) std::cerr << "tcgetattr failed: " << strerror(errno) << std::endl;
-            close(fd);
-            fd = -1;
-            return 0;
-        }
-
-        // Set baud rate
-        cfsetispeed(&options, B115200);
-        cfsetospeed(&options, B115200);
-
-        // 8N1 mode
-        options.c_cflag |= (CLOCAL | CREAD);
-        options.c_cflag &= ~PARENB;
-        options.c_cflag &= ~CSTOPB;
-        options.c_cflag &= ~CSIZE;
-        options.c_cflag |= CS8;
-
-        // Raw mode
-        options.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-        options.c_iflag &= ~(IXON | IXOFF | IXANY | ICRNL | INLCR);
-        options.c_oflag &= ~OPOST;
-
-        // Timing
-        options.c_cc[VMIN] = 0;
-        options.c_cc[VTIME] = 1;
-
-        if (tcsetattr(fd, TCSANOW, &options) == -1) {
-            if (DEBUG_SERIAL) std::cerr << "tcsetattr failed: " << strerror(errno) << std::endl;
-            close(fd);
-            fd = -1;
-            return 0;
-        }
-
-        // Critical: Flush buffers and wait
-        tcflush(fd, TCIOFLUSH);
-        usleep(500000); // 500ms delay - gives Pico time to stabilize
-
-        if (DEBUG_SERIAL) std::cout << "Successfully opened " << portName << std::endl;
-
-        return 1;
-#endif
+    fd = CreateFileA(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+                     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (fd == INVALID_HANDLE_VALUE) {
+        if (debugSerial) std::cerr << "SerialOpen failed" << std::endl;
+        return 0;
     }
 
-    EXPORT int SerialWrite(const unsigned char* data, int length) {
-#ifdef _WIN32
-        if (hSerial == INVALID_HANDLE_VALUE) return 0;
-        DWORD bytesWritten;
-        if (!WriteFile(hSerial, data, length, &bytesWritten, NULL)) return 0;
-        return bytesWritten;
+    DCB dcb = {0};
+    dcb.DCBlength = sizeof(dcb);
+    if (!GetCommState(fd, &dcb)) return 0;
+
+    dcb.BaudRate = baudRate;
+    dcb.ByteSize = 8;
+    dcb.StopBits = ONESTOPBIT;
+    dcb.Parity   = NOPARITY;
+    SetCommState(fd, &dcb);
+
+    COMMTIMEOUTS t = {0};
+    t.ReadIntervalTimeout        = 50;
+    t.ReadTotalTimeoutConstant   = 50;
+    t.ReadTotalTimeoutMultiplier = 10;
+    SetCommTimeouts(fd, &t);
+
 #else
-        if (fd == -1) {
-            if (DEBUG_SERIAL) std::cerr << "SerialWrite: fd is -1" << std::endl;
-            return 0;
-        }
-
-        int totalWritten = 0;
-        int attempts = 0;
-        const int maxAttempts = 5;
-
-        while (totalWritten < length && attempts < maxAttempts) {
-            int n = write(fd, data + totalWritten, length - totalWritten);
-
-            if (n < 0) {
-                if (errno == EINTR) {
-                    // Interrupted, just retry
-                    continue;
-                }
-                if (errno == EAGAIN || errno == EWOULDBLOCK) {
-                    // Would block, wait and retry
-                    usleep(10000); // 10ms
-                    attempts++;
-                    continue;
-                }
-                // Real error
-                if (DEBUG_SERIAL) std::cerr << "Write error: " << strerror(errno) << std::endl;
-                return totalWritten;
-            }
-
-            totalWritten += n;
-
-            if (n > 0 && totalWritten < length) {
-                // Partial write, small delay before next chunk
-                usleep(1000);
-            }
-        }
-
-        if (DEBUG_SERIAL && totalWritten > 0) {
-            std::cout << "Wrote " << totalWritten << " bytes" << std::endl;
-        }
-
-        // Small delay after write to let Pico process
-        if (totalWritten == length) {
-            usleep(5000); // 5ms
-        }
-
-        return totalWritten;
-#endif
+    fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
+    if (fd < 0) {
+        if (debugSerial) std::cerr << "Failed to open port" << std::endl;
+        return 0;
     }
 
-    EXPORT int SerialRead(unsigned char* buffer, int bufferSize) {
-#ifdef _WIN32
-        if (hSerial == INVALID_HANDLE_VALUE) return 0;
-        DWORD bytesRead;
-        if (!ReadFile(hSerial, buffer, bufferSize - 1, &bytesRead, NULL)) return 0;
-        buffer[bytesRead] = '\0';
-        if (DEBUG_SERIAL && bytesRead > 0) std::cout << "Read " << bytesRead << " bytes" << std::endl;
-        return bytesRead;
-#else
-        if (fd == -1) return 0;
+    fcntl(fd, F_SETFL, 0);
 
-        int n = read(fd, buffer, bufferSize - 1);
+    struct termios options;
+    tcgetattr(fd, &options);
 
-        if (n < 0) {
-            if (errno == EINTR || errno == EAGAIN) {
-                return 0; // No data available
-            }
-            if (DEBUG_SERIAL) std::cerr << "Read error: " << strerror(errno) << std::endl;
-            return 0;
-        }
+    speed_t spd = baudToSpeed(baudRate);
 
-        if (n > 0) {
-            buffer[n] = '\0';
-            if (DEBUG_SERIAL) std::cout << "Read " << n << " bytes" << std::endl;
-        }
+    cfsetispeed(&options, spd);
+    cfsetospeed(&options, spd);
 
-        return n;
+    options.c_cflag |= CS8 | CLOCAL | CREAD;
+    options.c_iflag = IGNPAR;
+    options.c_oflag = 0;
+    options.c_lflag = 0;
+
+    tcflush(fd, TCIFLUSH);
+    tcsetattr(fd, TCSANOW, &options);
+
+    // Arduino CDC devices reboot on open → wait
+    usleep(800000);
 #endif
-    }
 
-    EXPORT void SerialClose() {
+    if (debugSerial) std::cout << "Serial port opened" << std::endl;
+    return 1;
+}
+
+// --------------------
+// SerialClose
+// --------------------
+
+EXPORT void SerialClose() {
 #ifdef _WIN32
-        if (hSerial != INVALID_HANDLE_VALUE) {
-            CloseHandle(hSerial);
-            hSerial = INVALID_HANDLE_VALUE;
-        }
+    if (fd != INVALID_HANDLE_VALUE) CloseHandle(fd);
+    fd = INVALID_HANDLE_VALUE;
 #else
-        if (fd != -1) {
-            if (DEBUG_SERIAL) std::cout << "Closing serial port" << std::endl;
-            close(fd);
-            fd = -1;
-        }
+    if (fd >= 0) close(fd);
+    fd = -1;
 #endif
-    }
+    if (debugSerial) std::cout << "Serial port closed" << std::endl;
+}
+
+// --------------------
+// SerialSetBaud
+// --------------------
+
+EXPORT int SerialSetBaud(int baudRate) {
+#ifdef _WIN32
+    if (fd == INVALID_HANDLE_VALUE) return 0;
+
+    DCB dcb = {0};
+    dcb.DCBlength = sizeof(dcb);
+    if (!GetCommState(fd, &dcb)) return 0;
+
+    dcb.BaudRate = baudRate;
+    if (!SetCommState(fd, &dcb)) return 0;
+
+#else
+    if (fd < 0) return 0;
+
+    struct termios options;
+    if (tcgetattr(fd, &options) == -1) return 0;
+
+    speed_t spd = baudToSpeed(baudRate);
+
+    cfsetispeed(&options, spd);
+    cfsetospeed(&options, spd);
+
+    if (tcsetattr(fd, TCSANOW, &options) == -1) return 0;
+
+    tcflush(fd, TCIOFLUSH);
+    usleep(20000); // allow device to switch baud
+#endif
+
+    if (debugSerial) std::cout << "Baud rate set to " << baudRate << std::endl;
+    return 1;
+}
+
+// --------------------
+// SerialWrite
+// --------------------
+
+EXPORT int SerialWrite(const unsigned char* data, int length) {
+    if (length <= 0) return 0;
+
+#ifdef _WIN32
+    DWORD written;
+    if (!WriteFile(fd, data, length, &written, NULL)) return 0;
+    return written;
+#else
+    int n = write(fd, data, length);
+    return (n < 0) ? 0 : n;
+#endif
+}
+
+// --------------------
+// SerialWrite2
+// --------------------
+
+EXPORT int SerialWrite2(unsigned char position, unsigned char speed) {
+    unsigned char buf[2] = { position, speed };
+    return SerialWrite(buf, 2);
+}
+
+// --------------------
+// SerialRead
+// --------------------
+
+EXPORT int SerialRead(unsigned char* buffer, int bufferSize) {
+    if (bufferSize <= 0) return 0;
+
+#ifdef _WIN32
+    DWORD bytesRead;
+    if (!ReadFile(fd, buffer, bufferSize, &bytesRead, NULL)) return 0;
+    return bytesRead;
+#else
+    int n = read(fd, buffer, bufferSize);
+    return (n < 0) ? 0 : n;
+#endif
+}
+
+// --------------------
+// SerialRead2
+// --------------------
+
+EXPORT int SerialRead2(unsigned char* position, unsigned char* speed) {
+    unsigned char buf[2];
+    int n = SerialRead(buf, 2);
+
+    if (n <= 0) return 0;
+
+    *position = buf[0];
+    *speed    = (n > 1) ? buf[1] : 0;
+
+    return n;
 }

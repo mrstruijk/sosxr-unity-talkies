@@ -22,6 +22,8 @@ namespace SOSXR.Talkies
         [Header("Debug")]
         [SerializeField] private bool m_debugToggleLED = true;
         [SerializeField] [ShowIf(nameof(m_debugToggleLED))] private Vector2 m_debugToggleRange = new(0.1f, 0.5f);
+        [SerializeField] private int m_desiredBaud;
+        [SerializeField] [DisableEditing] private int _currentBaud;
 
         private readonly StringBuilder receiveBuffer = new();
         private readonly byte[] readBuffer = new byte[1024];
@@ -37,11 +39,23 @@ namespace SOSXR.Talkies
 
 
         [DllImport("SerialPlugin")]
+        private static extern int SerialSetBaud(int baud);
+
+
+        [DllImport("SerialPlugin")]
         private static extern int SerialWrite(byte[] data, int length);
 
 
         [DllImport("SerialPlugin")]
         private static extern int SerialRead(byte[] buffer, int bufferSize);
+
+
+        [DllImport("SerialPlugin")]
+        private static extern int SerialWrite2(byte pos, byte speed);
+
+
+        [DllImport("SerialPlugin")]
+        private static extern int SerialRead2(out byte pos, out byte speed);
 
 
         private void OnValidate()
@@ -79,7 +93,32 @@ namespace SOSXR.Talkies
 
         private void Update()
         {
+            // SetBaud(m_desiredBaud);
+
             ReadBuffer();
+        }
+
+
+        [Button(space: 10, horizontalLine: true)]
+        private void SetBaud(int baud)
+        {
+            if (!_connector.IsConnected)
+            {
+                this.Warning("We're not connected! Cannot continue");
+
+                return;
+            }
+
+            var ok = SerialSetBaud(baud);
+
+            if (ok == 1)
+            {
+                this.Verbose("Baud successfully updated to " + baud);
+            }
+            else
+            {
+                this.Error("Failed to set baud to " + baud);
+            }
         }
 
 

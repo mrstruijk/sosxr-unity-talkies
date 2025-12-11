@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
+using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 
 namespace SOSXR.Talkies
@@ -42,7 +43,7 @@ namespace SOSXR.Talkies
             try
             {
                 this.Verbose($"Connecting to {m_portName}...");
-                var result = SerialOpen(m_portName, m_baudRate);
+                var result = SerialOpen(m_portName, m_baudRate, true);
 
                 if (result == 1)
                 {
@@ -82,8 +83,10 @@ namespace SOSXR.Talkies
 
 
         // Native plugin imports
+
+
         [DllImport("SerialPlugin")]
-        private static extern int SerialOpen(string portName, int baudRate);
+        private static extern int SerialOpen(string portName, int baudRate, bool debug);
 
 
         [DllImport("SerialPlugin")]
@@ -106,7 +109,7 @@ namespace SOSXR.Talkies
         {
             if (m_availablePorts.Length > 0)
             {
-                Connect();
+                // Connect();
             }
         }
 

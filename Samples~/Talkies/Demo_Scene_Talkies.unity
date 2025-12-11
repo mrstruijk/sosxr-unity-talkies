@@ -275,8 +275,20 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 555147389088819683, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
       propertyPath: m_defaultPin
       value: 16
+      objectReference: {fileID: 0}
+    - target: {fileID: 983288119421743408, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1788968687740425091, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
+      propertyPath: m_Enabled
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1788968687740425091, guid: 686d61bbf0ded45148a7d3ea3a7b35c1, type: 3}
       propertyPath: m_toggleTime
@@ -474,6 +486,10 @@ PrefabInstance:
     - target: {fileID: 8470166727728662511, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_Name
       value: PinController_Android
+      objectReference: {fileID: 0}
+    - target: {fileID: 8470166727728662511, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8739725155421462195, guid: 6fbd79d38450a4dab850cb4dfdd03294, type: 3}
       propertyPath: m_LocalPosition.x
