@@ -1,29 +1,20 @@
-// SerialPlugin.cpp 
-// 
-// Rename file to SerialPlugin.cpp (stored without because otherwise Unity cannot build) 
-// Compile as shared library: .dll (Windows) / .bundle (macOS) which needs be placed in a /Plugins folder inside Unity Assets folder. 
+// SerialPlugin_macOS.cpp
+// macOS implementation of Unity Serial Plugin
+// Rename file to SerialPlugin_macOS.cpp (stored without because otherwise Unity cannot build) 
 //
-// Example compilation commands: 
-//
-// Windows (Visual Studio CPP Build Tools), from https://visualstudio.microsoft.com/visual-cpp-build-tools/: 
-// cl /EHsc /MD /LD SerialPlugin.cpp /Fe:SerialPlugin.dll
-//
-// macOS (clang++):
-// clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin.cpp -framework IOKit -framework CoreFoundation
-//
-// macOS (inc source file handling)
-// cp SerialPlugin SerialPlugin.cpp && clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin.cpp -framework IOKit -framework CoreFoundation && rm SerialPlugin.cpp
+// Compile with clang++:
+// clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin_macOS.cpp -framework IOKit -framework CoreFoundation
 
-#ifdef _WIN32
-#include <windows.h>
-#else
+// macOS (inc source file handling)
+// cp SerialPlugin_macOS SerialPlugin_macOS.cpp && clang++ -dynamiclib -o SerialPlugin.bundle SerialPlugin_macOS.cpp -framework IOKit -framework CoreFoundation && rm SerialPlugin_macOS.cpp
+//
+// Place the resulting SerialPlugin.dll in a /Plugins folder in Unity
+
 #include <termios.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <errno.h>
 #include <string.h>
-#endif
-
 #include <iostream>
 
 #define EXPORT extern "C"
@@ -32,19 +23,13 @@
 // State
 // --------------------
 
-#ifdef _WIN32
-static HANDLE fd = INVALID_HANDLE_VALUE;
-#else
 static int fd = -1;
-#endif
-
 static bool debugSerial = false;
 
 // --------------------
 // Helpers
 // --------------------
 
-#ifndef _WIN32
 static speed_t baudToSpeed(int baudRate) {
     switch (baudRate) {
         case 4800:   return B4800;
@@ -56,7 +41,6 @@ static speed_t baudToSpeed(int baudRate) {
         default:     return B115200;
     }
 }
-#endif
 
 // --------------------
 // SerialOpen
@@ -65,31 +49,6 @@ static speed_t baudToSpeed(int baudRate) {
 EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
     debugSerial = debug;
 
-#ifdef _WIN32
-    fd = CreateFileA(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
-                     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-    if (fd == INVALID_HANDLE_VALUE) {
-        if (debugSerial) std::cerr << "SerialOpen failed" << std::endl;
-        return 0;
-    }
-
-    DCB dcb = {0};
-    dcb.DCBlength = sizeof(dcb);
-    if (!GetCommState(fd, &dcb)) return 0;
-
-    dcb.BaudRate = baudRate;
-    dcb.ByteSize = 8;
-    dcb.StopBits = ONESTOPBIT;
-    dcb.Parity   = NOPARITY;
-    SetCommState(fd, &dcb);
-
-    COMMTIMEOUTS t = {0};
-    t.ReadIntervalTimeout        = 50;
-    t.ReadTotalTimeoutConstant   = 50;
-    t.ReadTotalTimeoutMultiplier = 10;
-    SetCommTimeouts(fd, &t);
-
-#else
     fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
     if (fd < 0) {
         if (debugSerial) std::cerr << "Failed to open port" << std::endl;
@@ -116,7 +75,6 @@ EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
 
     // Arduino CDC devices reboot on open → wait
     usleep(800000);
-#endif
 
     if (debugSerial) std::cout << "Serial port opened" << std::endl;
     return 1;
@@ -127,13 +85,8 @@ EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
 // --------------------
 
 EXPORT void SerialClose() {
-#ifdef _WIN32
-    if (fd != INVALID_HANDLE_VALUE) CloseHandle(fd);
-    fd = INVALID_HANDLE_VALUE;
-#else
     if (fd >= 0) close(fd);
     fd = -1;
-#endif
     if (debugSerial) std::cout << "Serial port closed" << std::endl;
 }
 
@@ -142,17 +95,6 @@ EXPORT void SerialClose() {
 // --------------------
 
 EXPORT int SerialSetBaud(int baudRate) {
-#ifdef _WIN32
-    if (fd == INVALID_HANDLE_VALUE) return 0;
-
-    DCB dcb = {0};
-    dcb.DCBlength = sizeof(dcb);
-    if (!GetCommState(fd, &dcb)) return 0;
-
-    dcb.BaudRate = baudRate;
-    if (!SetCommState(fd, &dcb)) return 0;
-
-#else
     if (fd < 0) return 0;
 
     struct termios options;
@@ -167,62 +109,49 @@ EXPORT int SerialSetBaud(int baudRate) {
 
     tcflush(fd, TCIOFLUSH);
     usleep(20000); // allow device to switch baud
-#endif
 
     if (debugSerial) std::cout << "Baud rate set to " << baudRate << std::endl;
     return 1;
 }
 
 // --------------------
-// SerialWrite
+// SerialWriteInternal
 // --------------------
 
-EXPORT int SerialWrite(const unsigned char* data, int length) {
+int SerialWriteInternal(const unsigned char* data, int length) {
     if (length <= 0) return 0;
 
-#ifdef _WIN32
-    DWORD written;
-    if (!WriteFile(fd, data, length, &written, NULL)) return 0;
-    return written;
-#else
     int n = write(fd, data, length);
     return (n < 0) ? 0 : n;
-#endif
 }
 
 // --------------------
-// SerialWrite2
+// SerialWrite
 // --------------------
 
-EXPORT int SerialWrite2(unsigned char position, unsigned char speed) {
+EXPORT int SerialWrite(unsigned char position, unsigned char speed) {
     unsigned char buf[2] = { position, speed };
-    return SerialWrite(buf, 2);
+    return SerialWriteInternal(buf, 2);
+}
+
+// --------------------
+// SerialReadInternal
+// --------------------
+
+EXPORT int SerialReadInternal(unsigned char* buffer, int bufferSize) {
+    if (bufferSize <= 0) return 0;
+
+    int n = read(fd, buffer, bufferSize);
+    return (n < 0) ? 0 : n;
 }
 
 // --------------------
 // SerialRead
 // --------------------
 
-EXPORT int SerialRead(unsigned char* buffer, int bufferSize) {
-    if (bufferSize <= 0) return 0;
-
-#ifdef _WIN32
-    DWORD bytesRead;
-    if (!ReadFile(fd, buffer, bufferSize, &bytesRead, NULL)) return 0;
-    return bytesRead;
-#else
-    int n = read(fd, buffer, bufferSize);
-    return (n < 0) ? 0 : n;
-#endif
-}
-
-// --------------------
-// SerialRead2
-// --------------------
-
-EXPORT int SerialRead2(unsigned char* position, unsigned char* speed) {
+EXPORT int SerialRead(unsigned char* position, unsigned char* speed) {
     unsigned char buf[2];
-    int n = SerialRead(buf, 2);
+    int n = SerialReadInternal(buf, 2);
 
     if (n <= 0) return 0;
 

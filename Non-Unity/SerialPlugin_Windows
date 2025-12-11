@@ -1,0 +1,131 @@
+// SerialPlugin_Windows.cpp
+// Windows implementation of Unity Serial Plugin
+// Rename file to SerialPlugin_Windows.cpp (stored without because otherwise Unity cannot build) 
+//
+// Compile with Visual Studio C++ Build Tools:
+// cl /EHsc /MD /LD SerialPlugin_Windows.cpp /Fe:SerialPlugin.dll
+//
+// Place the resulting SerialPlugin.dll in a /Plugins folder in Unity
+
+#include <windows.h>
+#include <iostream>
+
+#define EXPORT extern "C" __declspec(dllexport)
+
+// --------------------
+// State
+// --------------------
+
+static HANDLE fd = INVALID_HANDLE_VALUE;
+static bool debugSerial = false;
+
+// --------------------
+// SerialOpen
+// --------------------
+
+EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
+    debugSerial = debug;
+
+    fd = CreateFileA(portName, GENERIC_READ | GENERIC_WRITE, 0, NULL,
+                     OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (fd == INVALID_HANDLE_VALUE) {
+        if (debugSerial) std::cerr << "SerialOpen failed" << std::endl;
+        return 0;
+    }
+
+    DCB dcb = {0};
+    dcb.DCBlength = sizeof(dcb);
+    if (!GetCommState(fd, &dcb)) return 0;
+
+    dcb.BaudRate = baudRate;
+    dcb.ByteSize = 8;
+    dcb.StopBits = ONESTOPBIT;
+    dcb.Parity   = NOPARITY;
+    SetCommState(fd, &dcb);
+
+    COMMTIMEOUTS t = {0};
+    t.ReadIntervalTimeout        = 50;
+    t.ReadTotalTimeoutConstant   = 50;
+    t.ReadTotalTimeoutMultiplier = 10;
+    SetCommTimeouts(fd, &t);
+
+    if (debugSerial) std::cout << "Serial port opened" << std::endl;
+    return 1;
+}
+
+// --------------------
+// SerialClose
+// --------------------
+
+EXPORT void SerialClose() {
+    if (fd != INVALID_HANDLE_VALUE) CloseHandle(fd);
+    fd = INVALID_HANDLE_VALUE;
+    if (debugSerial) std::cout << "Serial port closed" << std::endl;
+}
+
+// --------------------
+// SerialSetBaud
+// --------------------
+
+EXPORT int SerialSetBaud(int baudRate) {
+    if (fd == INVALID_HANDLE_VALUE) return 0;
+
+    DCB dcb = {0};
+    dcb.DCBlength = sizeof(dcb);
+    if (!GetCommState(fd, &dcb)) return 0;
+
+    dcb.BaudRate = baudRate;
+    if (!SetCommState(fd, &dcb)) return 0;
+
+    if (debugSerial) std::cout << "Baud rate set to " << baudRate << std::endl;
+    return 1;
+}
+
+// --------------------
+// SerialWriteInternal
+// --------------------
+
+int SerialWriteInternal(const unsigned char* data, int length) {
+    if (length <= 0) return 0;
+
+    DWORD written;
+    if (!WriteFile(fd, data, length, &written, NULL)) return 0;
+    return written;
+}
+
+// --------------------
+// SerialWrite
+// --------------------
+
+EXPORT int SerialWrite(unsigned char position, unsigned char speed) {
+    unsigned char buf[2] = { position, speed };
+    return SerialWriteInternal(buf, 2);
+}
+
+// --------------------
+// SerialReadInternal
+// --------------------
+
+EXPORT int SerialReadInternal(unsigned char* buffer, int bufferSize) {
+    if (bufferSize <= 0) return 0;
+
+    DWORD bytesRead;
+    if (!ReadFile(fd, buffer, bufferSize, &bytesRead, NULL)) return 0;
+    return bytesRead;
+}
+
+// --------------------
+// SerialRead
+// --------------------
+
+EXPORT int SerialRead(unsigned char* position, unsigned char* speed) {
+    unsigned char buf[2];
+    int n = SerialReadInternal(buf, 2);
+
+    if (n <= 0) return 0;
+
+    *position = buf[0];
+    *speed    = (n > 1) ? buf[1] : 0;
+
+    return n;
+}
