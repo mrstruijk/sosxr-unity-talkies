@@ -5,7 +5,6 @@ The changelog format is based on [Keep a Changelog](https://keepachangelog.com/e
 
 ## [0.2.0] - In Development
 
-
 ### Added
 
 -
@@ -21,7 +20,6 @@ The changelog format is based on [Keep a Changelog](https://keepachangelog.com/e
 ### Removed
 
 -
-
 
 ## [0.1.0] - 2025-10-20
 

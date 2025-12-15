@@ -4,9 +4,9 @@ namespace SOSXR.Talkies
     {
         bool IsConnected { get; }
 
+        Mode CurrentMode { get; }
 
         void Connect();
-
 
         void Disconnect();
     }
