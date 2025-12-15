@@ -56,10 +56,16 @@ namespace SOSXR.SeaShark
         /// <exception cref="ArgumentOutOfRangeException"></exception>
         public static char ToASCII(byte b)
         {
+            /*
             if (b > 0x7F)
             {
                 throw new ArgumentOutOfRangeException($"{b} is not valid ASCII");
             }
+            if (b < 0x20)
+            {
+                throw new ArgumentOutOfRangeException($"{b} is a non-printable ASCII character");
+            }
+            */
 
             return (char) b;
         }
