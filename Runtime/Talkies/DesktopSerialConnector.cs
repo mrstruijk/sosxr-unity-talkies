@@ -52,7 +52,7 @@ namespace SOSXR.Talkies
 
             try
             {
-                this.Verbose($"Connecting to {m_portName} at {GetBaudFromMode()}...");
+                this.Verbose($"Connecting to {m_portName}");
                 var result = SerialOpen(m_portName, GetBaudFromMode(), true);
 
                 if (result == 1)
@@ -147,7 +147,10 @@ namespace SOSXR.Talkies
 
         private void OnValidate()
         {
-            RefreshPorts();
+            if (m_availablePorts == null || m_availablePorts.Length == 0)
+            {
+                RefreshPorts();
+            }
         }
 
 
