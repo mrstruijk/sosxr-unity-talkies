@@ -15,16 +15,16 @@ namespace SOSXR.Talkies
     [RequireComponent(typeof(ISerialConnect))]
     public class ByteSize : MonoBehaviour
     {
-        private readonly char _commandFiller = '-';
+        [Tooltip("Careful: if theres an issue in reading, this will make your life a little more interesting than it needs to be.")]
+        [SerializeField] private bool m_readEveryFrame;
+
+        private readonly char _commandFiller = '-'; // Any char that's not (often) used for commands.
+
         private ISerialConnect _connector;
 
         // Buffers for reading data
         private byte positionBuffer;
         private byte speedBuffer;
-
-
-        [DllImport("SerialPlugin")]
-        private static extern int SerialSetBaud(int baud);
 
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            this.Verbose($"Successfully sent command. Position (b: {position} - ascii: {posChar}) Speed (b: {speed} - ascii: {spdChar})");
+            this.Verbose($"Successfully sent command. Position byte: {position} (ascii: {posChar}) Speed byte: {speed} (ascii: {spdChar})");
         }
 
 
@@ -141,7 +141,16 @@ namespace SOSXR.Talkies
         }
 
 
-        [Button]
+        private void Update()
+        {
+            if (m_readEveryFrame)
+            {
+                ReadBuffer();
+            }
+        }
+
+
+        [Button] // Test reading a single byte from the serial line. Useful if not also done in Update().
         public void ReadBuffer()
         {
             if (!_connector.IsConnected)
@@ -163,14 +172,7 @@ namespace SOSXR.Talkies
             var receivedByte = (byte) result;
             var receivedASCII = ASCIITable.ToASCII(receivedByte);
 
-            if (receivedByte <= 180) // Valid servo position
-            {
-                this.Info($"Servo reached final position. byte:{receivedByte}-ascii:{receivedASCII}");
-            }
-            else
-            {
-                this.Warning($"Received code. byte:{receivedByte}-ascii:{receivedASCII}");
-            }
+            this.Info($"Received byte:{receivedByte} (ascii:{receivedASCII})");
         }
     }
 }
