@@ -62,15 +62,16 @@ namespace SOSXR.Talkies
                 }
                 else
                 {
-                    m_currentBaudRate = -1;
                     m_isConnected = false;
                     this.Error($"Failed to open {m_portName}. Check connection. Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
                 }
+
+                m_currentBaudRate = GetBaudFromMode();
             }
             catch (Exception ex)
             {
-                m_currentBaudRate = -1;
                 m_isConnected = false;
+                m_currentBaudRate = GetBaudFromMode();
                 this.Error("Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
                 this.Error($"Exception while connecting: {ex.Message}");
                 SerialClose();
@@ -99,6 +100,11 @@ namespace SOSXR.Talkies
 
         private int GetBaudFromMode()
         {
+            if (!m_isConnected)
+            {
+                return -1;
+            }
+
             if (m_currentMode == Mode.Command)
             {
                 return _commandBaudRate;

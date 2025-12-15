@@ -50,12 +50,11 @@ EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
     debugSerial = debug;
 
     fd = open(portName, O_RDWR | O_NOCTTY | O_NONBLOCK);
+
     if (fd < 0) {
         if (debugSerial) std::cerr << "Failed to open port" << std::endl;
         return 0;
     }
-
-    fcntl(fd, F_SETFL, 0);
 
     struct termios options;
     tcgetattr(fd, &options);
@@ -69,6 +68,10 @@ EXPORT int SerialOpen(const char* portName, int baudRate, bool debug) {
     options.c_iflag = IGNPAR;
     options.c_oflag = 0;
     options.c_lflag = 0;
+
+    // CRITICAL: Set non-blocking read behavior
+    options.c_cc[VMIN] = 0;   // Return immediately with whatever is available
+    options.c_cc[VTIME] = 0;  // No timeout
 
     tcflush(fd, TCIFLUSH);
     tcsetattr(fd, TCSANOW, &options);
@@ -135,28 +138,23 @@ EXPORT int SerialWrite(unsigned char position, unsigned char speed) {
 }
 
 // --------------------
-// SerialReadInternal
+// SerialRead - Read one byte
 // --------------------
-
-int SerialReadInternal(unsigned char* buffer, int bufferSize) {
-    if (bufferSize <= 0) return 0;
-
-    int n = read(fd, buffer, bufferSize);
-    return (n < 0) ? 0 : n;
-}
-
-// --------------------
-// SerialRead
-// --------------------
-
-EXPORT int SerialRead(unsigned char* position, unsigned char* speed) {
-    unsigned char buf[2];
-    int n = SerialReadInternal(buf, 2);
-
-    if (n <= 0) return 0;
-
-    *position = buf[0];
-    *speed    = (n > 1) ? buf[1] : 0;
-
-    return n;
+EXPORT int SerialRead() {
+    if (fd < 0) {
+        return -1;  // Not connected
+    }
+    
+    unsigned char byte = 0;
+    int n = read(fd, &byte, 1);
+    
+    if (n == 1) {
+        if (debugSerial) {
+            std::cout << "Read byte: " << (int)byte << " (0x" << std::hex << (int)byte << std::dec << ")" << std::endl;
+        }
+        return (int)byte;  // Return as int (0-255)
+    }
+    
+    // No data available
+    return -1;  // Indicates no data
 }

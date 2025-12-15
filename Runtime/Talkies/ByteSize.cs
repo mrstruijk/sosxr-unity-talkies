@@ -16,24 +16,36 @@ namespace SOSXR.Talkies
     [RequireComponent(typeof(ISerialConnect))]
     public class ByteSize : MonoBehaviour
     {
-        private readonly char _commandFiller = '-';
+        private readonly byte _commandFiller = 0;
         private ISerialConnect _connector;
 
         // Buffers for reading data
-        private char positionBuffer;
-        private char speedBuffer;
+        private byte positionBuffer;
+        private byte speedBuffer;
 
 
         [DllImport("SerialPlugin")]
         private static extern int SerialSetBaud(int baud);
 
 
+        /// <summary>
+        ///     C++ `unsigned char` is 1 byte. In C# this is 2 byte.
+        ///     To match, C# needs to use `byte`.
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="speed"></param>
+        /// <returns></returns>
         [DllImport("SerialPlugin")]
-        private static extern int SerialWrite(char position, char speed);
+        private static extern int SerialWrite(byte position, byte speed);
 
 
+        /// <summary>
+        ///     C++ `unsigned char` is 1 byte. In C# this is 2 byte.
+        ///     To match, C# needs to use `byte`.
+        /// </summary>
+        /// <returns></returns>
         [DllImport("SerialPlugin")]
-        private static extern int SerialRead(ref char position, ref char speed);
+        private static extern int SerialRead();
 
 
         private void Awake()
@@ -51,36 +63,36 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            // Reset buffers. TODO: check if this is good.
-            positionBuffer = char.MinValue;
-            speedBuffer = char.MinValue;
+            var result = SerialRead();
 
-            var bytesRead = SerialRead(ref positionBuffer, ref speedBuffer);
-
-            if (bytesRead <= 0)
+            if (result < 0)
             {
-                this.Warning("No data received from serial port");
-
-                return;
+                return; // No data available
             }
 
-            // Give some feedback on what we're receiving from the MicroController
-            if (bytesRead == 1)
+            var receivedByte = (byte) result;
+
+            // Check for error codes (high byte values that represent negative chars)
+            if (receivedByte == 255) // -1 as unsigned byte
             {
-                this.Verbose($"Received partial data - Position: {positionBuffer}");
+                this.Warning("Arduino Error: Servo is locked");
             }
-            else if (bytesRead == 2)
+            else if (receivedByte == 254) // -2 as unsigned byte
             {
-                this.Info($"Received complete data - Position: {positionBuffer}, Speed: {speedBuffer}");
+                this.Warning("Arduino Error: Servo is moving");
+            }
+            else if (receivedByte <= 180) // Valid servo position
+            {
+                this.Info($"Servo reached final position: {receivedByte}");
             }
             else
             {
-                this.Warning($"Unexpected byte count received: {bytesRead}");
+                this.Warning($"Unexpected byte received: {receivedByte}");
             }
         }
 
 
-        private void SendCommand(char position, char speed)
+        private void SendCommand(byte position, byte speed)
         {
             var pos = Encoding.ASCII.GetBytes(position.ToString())[0];
             var spd = Encoding.ASCII.GetBytes(speed.ToString())[0];
@@ -92,6 +104,7 @@ namespace SOSXR.Talkies
                 return;
             }
 
+            /*
             if (position is 'v' or 'i' or 's' or 'u' && speed == _commandFiller)
             {
                 if (_connector.CurrentMode != Mode.Command)
@@ -106,6 +119,7 @@ namespace SOSXR.Talkies
                     this.Warning("We're still in Command Mode, yet you are trying to send data?");
                 }
             }
+            */
 
             var written = SerialWrite(position, speed);
 
@@ -116,46 +130,63 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            if (position is 'v' or 'i' or 's' or 'u')
+            /*if (position is 'v' or 'i' or 's' or 'u')
             {
                 Debug.Log($"Sending command {position}"); // some reason EnhancedLogger cries in char
 
                 return;
             }
+            */
 
             this.Info($"Successfully sent command - Position: {pos}, Speed: {spd}");
+        }
+
+
+        private byte AsByte(char c)
+        {
+            return (byte) (c - '0');
+        }
+
+
+        private byte AsByte(string s)
+        {
+            if (s.Length > 1)
+            {
+                this.Warning($"Too many characters provided {s}");
+            }
+
+            return AsByte(s[0]);
         }
 
 
         [Button]
         public void Unlock()
         {
-            SendCommand('u', _commandFiller);
+            SendCommand(AsByte('u'), _commandFiller);
         }
 
 
         [Button]
         public void Info()
         {
-            SendCommand('i', _commandFiller);
+            SendCommand(AsByte('i'), _commandFiller);
         }
 
 
         [Button]
         public void Stop()
         {
-            SendCommand('s', _commandFiller);
+            SendCommand(AsByte('s'), _commandFiller);
         }
 
 
         [Button]
         public void Version()
         {
-            SendCommand('v', _commandFiller);
+            SendCommand(AsByte('v'), _commandFiller);
         }
 
 
-        // Optional: Public methods for external usage
         [Button]
         public void TestSendCommand(string position, string speed)
         {
@@ -173,8 +204,8 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            var pos = position[0];
-            var spd = speed[0];
+            var pos = AsByte(position[0]);
+            var spd = AsByte(speed[0]);
 
             SendCommand(pos, spd);
         }
@@ -183,9 +214,9 @@ namespace SOSXR.Talkies
         [Button]
         public void TestReadBuffer()
         {
-            this.Error("No can do, this crashes!");
+            // this.Error("No can do, this crashes!");
 
-            return;
+            //return;
 
             ReadBuffer();
         }
