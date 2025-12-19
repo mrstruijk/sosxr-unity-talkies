@@ -1,37 +1,69 @@
 // SerialPlugin.h
 // Header file for Unity Serial Plugin
-// Cross-platform serial communication interface
+// Works with both Windows and macOS implementations
 
-#ifndef SERIAL_PLUGIN_H
-#define SERIAL_PLUGIN_H
+#ifndef SERIALPLUGIN_H
+#define SERIALPLUGIN_H
 
-#ifdef _WIN32
-    #define EXPORT extern "C" __declspec(dllexport)
-#else
-    #define EXPORT extern "C"
+#ifdef __cplusplus
+extern "C" {
 #endif
 
-// Opens a serial port with specified parameters
-// Returns 1 on success, 0 on failure
-EXPORT int SerialOpen(const char* portName, int baudRate, bool debug);
+// Platform-specific export macro
+#if defined(_WIN32) || defined(_WIN64)
+    #define EXPORT __declspec(dllexport)
+#else
+    #define EXPORT
+#endif
 
-// Closes the currently open serial port
+/**
+ * Opens a serial port connection
+ *
+ * @param portName The name of the serial port (e.g., "COM3" on Windows, "/dev/cu.usbserial-0001" on macOS)
+ * @param baudIndex Index for baud rate:
+ *                  0 = 4800
+ *                  1 = 9600
+ *                  2 = 19200
+ *                  3 = 38400
+ *                  4 = 57600
+ *                  5 = 115200
+ *                  default = 300
+ * @param debug Enable debug output to console
+ * @return 1 if successful, 0 on error
+ */
+EXPORT int SerialOpen(const char* portName, unsigned char baudIndex, bool debug);
+
+/**
+ * Closes the currently open serial port
+ */
 EXPORT void SerialClose();
 
-// Changes the baud rate of the open serial port
-// Returns 1 on success, 0 on failure
-EXPORT int SerialSetBaud(int baudRate);
+/**
+ * Writes a single byte to the serial port
+ *
+ * @param byte The single byte to write
+ * @return 1 if successful, 0 on error
+ */
+EXPORT int SerialWrite(unsigned char byte);
 
-// Writes two bytes (position and speed) to the serial port
-// Returns number of bytes written
-EXPORT int SerialWrite(unsigned char position, unsigned char speed);
+/**
+ * Writes two bytes (position and speed) to the serial port
+ *
+ * @param position The position value to write
+ * @param speed The speed value to write
+ * @return The number of bytes written (2 on success, 0 on error)
+ */
+EXPORT int SerialWriteTwo(unsigned char position, unsigned char speed);
 
-// Reads two bytes (position and speed) from the serial port
-// Returns number of bytes read
-EXPORT int SerialRead(unsigned char* position, unsigned char* speed);
+/**
+ * Reads a single byte from the serial port (non-blocking)
+ *
+ * @return The byte value (0-255) if data is available, -1 if no data or error
+ */
+EXPORT int SerialRead();
 
-// Internal functions for raw read/write operations
-int SerialWriteInternal(const unsigned char* data, int length);
-int SerialReadInternal(unsigned char* buffer, int bufferSize);
+#ifdef __cplusplus
+}
+#endif
 
-#endif // SERIAL_PLUGIN_H
+#endif // SERIALPLUGIN_H

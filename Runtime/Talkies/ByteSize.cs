@@ -18,6 +18,10 @@ namespace SOSXR.Talkies
         [Tooltip("Careful: if theres an issue in reading, this will make your life a little more interesting than it needs to be.")]
         [SerializeField] private bool m_readEveryFrame;
 
+        [SerializeField] [DisableEditing] private float m_sendTime;
+        [SerializeField] [DisableEditing] private float m_readTime;
+        [SerializeField] [DisableEditing] private float m_duration;
+
         private readonly char _commandFiller = '-'; // Any char that's not (often) used for commands.
 
         private ISerialConnect _connector;
@@ -31,11 +35,21 @@ namespace SOSXR.Talkies
         ///     C++ `unsigned char` is 1 byte. In C# this is 2 byte.
         ///     To match, C# needs to use `byte`.
         /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
+        [DllImport("SerialPlugin")]
+        private static extern int SerialWrite(byte command);
+
+
+        /// <summary>
+        ///     C++ `unsigned char` is 1 byte. In C# this is 2 byte.
+        ///     To match, C# needs to use `byte`.
+        /// </summary>
         /// <param name="position"></param>
         /// <param name="speed"></param>
         /// <returns></returns>
         [DllImport("SerialPlugin")]
-        private static extern int SerialWrite(byte position, byte speed);
+        private static extern int SerialWriteTwo(byte position, byte speed);
 
 
         /// <summary>
@@ -53,9 +67,35 @@ namespace SOSXR.Talkies
         }
 
 
-        public void SendCommand(byte position, byte speed)
+        public void SendCommand(byte command)
         {
-            var posChar = ASCIITable.ToASCII(position);
+            var commChar = ASCIITable.ToASCII(command);
+
+            if (!_connector.IsConnected)
+            {
+                this.Warning("Not connected! Cannot send command.");
+
+                return;
+            }
+
+            var written = SerialWrite(command);
+
+            if (written < 1)
+            {
+                this.Warning($"We may not have sent all. Written {written} bytes.");
+
+                return;
+            }
+
+            m_sendTime = Time.time;
+
+            this.Verbose($"Successfully sent command. Command byte: {command} (ascii: {commChar})");
+        }
+
+
+        public void SendCommand(byte command, byte speed)
+        {
+            var posChar = ASCIITable.ToASCII(command);
             var spdChar = ASCIITable.ToASCII(speed);
 
             if (!_connector.IsConnected)
@@ -65,7 +105,7 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            var written = SerialWrite(position, speed);
+            var written = SerialWriteTwo(command, speed);
 
             if (written <= 1)
             {
@@ -74,7 +114,9 @@ namespace SOSXR.Talkies
                 return;
             }
 
-            this.Verbose($"Successfully sent command. Position byte: {position} (ascii: {posChar}) Speed byte: {speed} (ascii: {spdChar})");
+            m_sendTime = Time.time;
+
+            this.Verbose($"Successfully sent command. Position byte: {command} (ascii: {posChar}) Speed byte: {speed} (ascii: {spdChar})");
         }
 
 
@@ -116,28 +158,28 @@ namespace SOSXR.Talkies
         [Button]
         public void Unlock()
         {
-            SendCommand(ASCIITable.FromASCII('u'), ASCIITable.FromASCII(_commandFiller));
+            SendCommand(ASCIITable.FromASCII('u'));
         }
 
 
         [Button]
         public void Info()
         {
-            SendCommand(ASCIITable.FromASCII('i'), ASCIITable.FromASCII(_commandFiller));
+            SendCommand(ASCIITable.FromASCII('i'));
         }
 
 
         [Button]
         public void Stop()
         {
-            SendCommand(ASCIITable.FromASCII('s'), ASCIITable.FromASCII(_commandFiller));
+            SendCommand(ASCIITable.FromASCII('s'));
         }
 
 
         [Button]
         public void Version()
         {
-            SendCommand(ASCIITable.FromASCII('v'), ASCIITable.FromASCII(_commandFiller));
+            SendCommand(ASCIITable.FromASCII('v'));
         }
 
 
@@ -172,7 +214,10 @@ namespace SOSXR.Talkies
             var receivedByte = (byte) result;
             var receivedASCII = ASCIITable.ToASCII(receivedByte);
 
-            this.Info($"Received byte:{receivedByte} (ascii:{receivedASCII})");
+            m_readTime = Time.time;
+            m_duration = m_readTime - m_sendTime;
+
+            this.Info($"Received byte:{receivedByte} (ascii:{receivedASCII}) - duration since send: {m_duration:F4} seconds");
         }
     }
 }

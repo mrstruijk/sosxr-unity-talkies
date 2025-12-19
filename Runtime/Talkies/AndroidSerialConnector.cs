@@ -16,7 +16,6 @@ namespace SOSXR.Talkies
         private AndroidJavaClass serialClass;
         private AndroidJavaObject activity;
         public bool IsConnected => m_isConnected;
-        public Mode CurrentMode { get; }
 
 
         [Button]

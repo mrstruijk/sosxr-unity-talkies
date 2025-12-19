@@ -9,11 +9,15 @@ using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 namespace SOSXR.Talkies
 {
-    public enum Mode
+    public enum BaudRate : byte
     {
-        None,
-        Command,
-        Data
+        B4800 = 0,
+        B9600 = 1,
+        B19200 = 2,
+        B38400 = 3,
+        B57600 = 4,
+        B115200 = 5,
+        TestBaud = 10
     }
 
 
@@ -22,15 +26,12 @@ namespace SOSXR.Talkies
         [DisableEditing] [SerializeField] private string[] m_availablePorts = Array.Empty<string>();
         [SerializeField] private int m_selectedPortIndex = 0;
         [DisableEditing] [SerializeField] private string m_portName = "COM3";
-        [SerializeField] [DisableEditing] private int m_currentBaudRate = -1;
         [DisableEditing] [SerializeField] private bool m_isConnected = false;
-        [SerializeField] private Mode m_currentMode = Mode.Command;
-        private readonly int _commandBaudRate = 4800;
-        private readonly int _dataBaudRate = 115200;
-        public Mode CurrentMode => m_currentMode;
+        [SerializeField] [DisableEditing] private BaudRate m_baudRate = BaudRate.B4800;
         public bool IsConnected => m_isConnected;
 
 
+        // [Button]
         public void Connect()
         {
             if (!Application.isPlaying)
@@ -53,25 +54,22 @@ namespace SOSXR.Talkies
             try
             {
                 this.Verbose($"Connecting to {m_portName}");
-                var result = SerialOpen(m_portName, GetBaudFromMode(), true);
+                var result = SerialOpen(m_portName, (byte) m_baudRate, false);
 
                 if (result == 1)
                 {
                     m_isConnected = true;
-                    this.Success($"Connected to device on {m_portName} with baud rate {GetBaudFromMode()}");
+                    this.Success($"Connected to device on {m_portName} with baud rate {m_baudRate}");
                 }
                 else
                 {
                     m_isConnected = false;
                     this.Error($"Failed to open {m_portName}. Check connection. Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
                 }
-
-                m_currentBaudRate = GetBaudFromMode();
             }
             catch (Exception ex)
             {
                 m_isConnected = false;
-                m_currentBaudRate = GetBaudFromMode();
                 this.Error("Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
                 this.Error($"Exception while connecting: {ex.Message}");
                 SerialClose();
@@ -98,33 +96,10 @@ namespace SOSXR.Talkies
         }
 
 
-        private int GetBaudFromMode()
-        {
-            if (!m_isConnected)
-            {
-                return -1;
-            }
-
-            if (m_currentMode == Mode.Command)
-            {
-                return _commandBaudRate;
-            }
-
-            if (m_currentMode == Mode.Data)
-            {
-                return _dataBaudRate;
-            }
-
-            this.Error("Invalid Mode");
-
-            return -1;
-        }
-
-
         [Button]
         public void ConnectInCommandMode()
         {
-            m_currentMode = Mode.Command;
+            m_baudRate = BaudRate.B4800;
             Connect();
         }
 
@@ -132,13 +107,13 @@ namespace SOSXR.Talkies
         [Button]
         public void ConnectInDataMode()
         {
-            m_currentMode = Mode.Data;
+            m_baudRate = BaudRate.B115200;
             Connect();
         }
 
 
         [DllImport("SerialPlugin")]
-        private static extern int SerialOpen(string portName, int baudRate, bool debug);
+        private static extern int SerialOpen(string portName, byte baudIndex, bool debug);
 
 
         [DllImport("SerialPlugin")]
