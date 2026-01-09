@@ -28,6 +28,8 @@ namespace SOSXR.Talkies
         [DisableEditing] [SerializeField] private string m_portName = "COM3";
         [DisableEditing] [SerializeField] private bool m_isConnected = false;
         [SerializeField] [DisableEditing] private BaudRate m_baudRate = BaudRate.B4800;
+        [SerializeField] private bool m_filterBluetooth = true;
+        
         public bool IsConnected => m_isConnected;
 
 
@@ -148,7 +150,13 @@ namespace SOSXR.Talkies
         public void RefreshPorts()
         {
             #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
-            m_availablePorts = Directory.GetFiles("/dev/", "cu.usbmodem*");
+            m_availablePorts = Directory.GetFiles("/dev/", "cu.*");
+
+            if (m_stripBlueTooth)
+            {
+                m_availablePorts = Array.FindAll(m_availablePorts, port => !port.Contains("Bluetooth"));
+            }
+            
             #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
             #else
