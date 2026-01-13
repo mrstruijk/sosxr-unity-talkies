@@ -16,6 +16,7 @@ Contributors:
 
 using System;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Exceptions
 {
     /// <summary>
@@ -29,8 +30,9 @@ namespace uPLibrary.Networking.M2Mqtt.Exceptions
         /// <param name="code">Error code</param>
         public MqttClientException(MqttClientErrorCode errorCode)
         {
-            this.ErrorCode = errorCode;
+            ErrorCode = errorCode;
         }
+
 
         // error code
 
@@ -39,6 +41,7 @@ namespace uPLibrary.Networking.M2Mqtt.Exceptions
         /// </summary>
         public MqttClientErrorCode ErrorCode { get; set; }
     }
+
 
     /// <summary>
     ///     MQTT client erroro code

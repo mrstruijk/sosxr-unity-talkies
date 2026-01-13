@@ -17,9 +17,11 @@ Contributors:
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
 
+
 #else
 using Microsoft.SPOT;
 #endif
+
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
@@ -28,6 +30,19 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public class MqttMsgUnsubscribedEventArgs : EventArgs
     {
+        // message identifier
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="messageId">Message identifier for unsubscribed topic</param>
+        public MqttMsgUnsubscribedEventArgs(ushort messageId)
+        {
+            MessageId = messageId;
+        }
+
+
         #region Properties...
 
         /// <summary>
@@ -36,16 +51,5 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public ushort MessageId { get; internal set; }
 
         #endregion
-
-        // message identifier
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="messageId">Message identifier for unsubscribed topic</param>
-        public MqttMsgUnsubscribedEventArgs(ushort messageId)
-        {
-            this.MessageId = messageId;
-        }
     }
 }

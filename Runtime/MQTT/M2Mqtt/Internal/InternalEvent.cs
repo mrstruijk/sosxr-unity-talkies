@@ -16,10 +16,10 @@ Contributors:
 
 namespace uPLibrary.Networking.M2Mqtt.Internal
 {
-   /// <summary>
-   ///     Generic internal event for dispatching
-   /// </summary>
-   public abstract class InternalEvent
+    /// <summary>
+    ///     Generic internal event for dispatching
+    /// </summary>
+    public abstract class InternalEvent
     {
     }
 }

@@ -4,7 +4,7 @@ using System;
 namespace SOSXR.SeaShark
 {
     /// <summary>
-    /// See: https://www.ascii-code.com for more info.
+    ///     See: https://www.ascii-code.com for more info.
     /// </summary>
     public static class ASCIITable
     {

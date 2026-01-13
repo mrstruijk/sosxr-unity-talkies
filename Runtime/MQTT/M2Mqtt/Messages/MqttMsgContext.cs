@@ -52,6 +52,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public string Key => Flow + "_" + Message.MessageId;
     }
 
+
     /// <summary>
     ///     Flow of the message
     /// </summary>
@@ -67,6 +68,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         /// </summary>
         ToAcknowledge
     }
+
 
     /// <summary>
     ///     MQTT message state

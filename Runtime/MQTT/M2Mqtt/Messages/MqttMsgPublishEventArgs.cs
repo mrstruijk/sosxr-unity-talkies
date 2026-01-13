@@ -17,9 +17,11 @@ Contributors:
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
 
+
 #else
 using Microsoft.SPOT;
 #endif
+
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
@@ -28,6 +30,35 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public class MqttMsgPublishEventArgs : EventArgs
     {
+        // message topic
+        // message data
+        // duplicate delivery
+        // quality of service level
+        // retain flag
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="topic">Message topic</param>
+        /// <param name="message">Message data</param>
+        /// <param name="dupFlag">Duplicate delivery flag</param>
+        /// <param name="qosLevel">Quality of Service level</param>
+        /// <param name="retain">Retain flag</param>
+        public MqttMsgPublishEventArgs(string topic,
+                                       byte[] message,
+                                       bool dupFlag,
+                                       byte qosLevel,
+                                       bool retain)
+        {
+            Topic = topic;
+            Message = message;
+            DupFlag = dupFlag;
+            QosLevel = qosLevel;
+            Retain = retain;
+        }
+
+
         #region Properties...
 
         /// <summary>
@@ -56,32 +87,5 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public bool Retain { get; internal set; }
 
         #endregion
-
-        // message topic
-        // message data
-        // duplicate delivery
-        // quality of service level
-        // retain flag
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="topic">Message topic</param>
-        /// <param name="message">Message data</param>
-        /// <param name="dupFlag">Duplicate delivery flag</param>
-        /// <param name="qosLevel">Quality of Service level</param>
-        /// <param name="retain">Retain flag</param>
-        public MqttMsgPublishEventArgs(string topic,
-            byte[] message,
-            bool dupFlag,
-            byte qosLevel,
-            bool retain)
-        {
-            this.Topic = topic;
-            this.Message = message;
-            this.DupFlag = dupFlag;
-            this.QosLevel = qosLevel;
-            this.Retain = retain;
-        }
     }
 }

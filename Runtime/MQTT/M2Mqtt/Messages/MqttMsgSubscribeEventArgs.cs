@@ -17,9 +17,11 @@ Contributors:
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
 
+
 #else
 using Microsoft.SPOT;
 #endif
+
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
@@ -28,6 +30,25 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public class MqttMsgSubscribeEventArgs : EventArgs
     {
+        // message identifier
+        // topics requested to subscribe
+        // QoS levels requested
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="messageId">Message identifier for subscribe topics request</param>
+        /// <param name="topics">Topics requested to subscribe</param>
+        /// <param name="qosLevels">List of QOS Levels requested</param>
+        public MqttMsgSubscribeEventArgs(ushort messageId, string[] topics, byte[] qosLevels)
+        {
+            MessageId = messageId;
+            Topics = topics;
+            QoSLevels = qosLevels;
+        }
+
+
         #region Properties...
 
         /// <summary>
@@ -46,22 +67,5 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public byte[] QoSLevels { get; internal set; }
 
         #endregion
-
-        // message identifier
-        // topics requested to subscribe
-        // QoS levels requested
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="messageId">Message identifier for subscribe topics request</param>
-        /// <param name="topics">Topics requested to subscribe</param>
-        /// <param name="qosLevels">List of QOS Levels requested</param>
-        public MqttMsgSubscribeEventArgs(ushort messageId, string[] topics, byte[] qosLevels)
-        {
-            this.MessageId = messageId;
-            this.Topics = topics;
-            this.QoSLevels = qosLevels;
-        }
     }
 }

@@ -20,6 +20,7 @@ Contributors:
 #if !(!UNITY_EDITOR&&UNITY_WSA_10_0&&!ENABLE_IL2CPP)
 using System.Threading;
 
+
 namespace uPLibrary.Networking.M2Mqtt
 {
     /// <summary>
@@ -31,6 +32,7 @@ namespace uPLibrary.Networking.M2Mqtt
         {
             new Thread(threadStart).Start();
         }
+
 
         public static void SleepThread(int millisecondsTimeout)
         {

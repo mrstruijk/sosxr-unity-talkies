@@ -16,6 +16,7 @@ Contributors:
 
 using uPLibrary.Networking.M2Mqtt.Messages;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Internal
 {
     /// <summary>
@@ -23,16 +24,8 @@ namespace uPLibrary.Networking.M2Mqtt.Internal
     /// </summary>
     public class MsgPublishedInternalEvent : MsgInternalEvent
     {
-        #region Properties...
-
-        /// <summary>
-        ///     Message published (or failed due to retries)
-        /// </summary>
-        public bool IsPublished { get; internal set; }
-
-        #endregion
-
         // published flag
+
 
         /// <summary>
         ///     Constructor
@@ -42,7 +35,17 @@ namespace uPLibrary.Networking.M2Mqtt.Internal
         public MsgPublishedInternalEvent(MqttMsgBase msg, bool isPublished)
             : base(msg)
         {
-            this.IsPublished = isPublished;
+            IsPublished = isPublished;
         }
+
+
+        #region Properties...
+
+        /// <summary>
+        ///     Message published (or failed due to retries)
+        /// </summary>
+        public bool IsPublished { get; internal set; }
+
+        #endregion
     }
 }

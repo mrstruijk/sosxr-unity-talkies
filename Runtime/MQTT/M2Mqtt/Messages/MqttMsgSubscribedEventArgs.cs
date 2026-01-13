@@ -17,9 +17,11 @@ Contributors:
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
 
+
 #else
 using Microsoft.SPOT;
 #endif
+
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
@@ -28,6 +30,22 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public class MqttMsgSubscribedEventArgs : EventArgs
     {
+        // message identifier
+        // granted QOS levels
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="messageId">Message identifier for subscribed topics</param>
+        /// <param name="grantedQosLevels">List of granted QOS Levels</param>
+        public MqttMsgSubscribedEventArgs(ushort messageId, byte[] grantedQosLevels)
+        {
+            MessageId = messageId;
+            GrantedQoSLevels = grantedQosLevels;
+        }
+
+
         #region Properties...
 
         /// <summary>
@@ -41,19 +59,5 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public byte[] GrantedQoSLevels { get; internal set; }
 
         #endregion
-
-        // message identifier
-        // granted QOS levels
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="messageId">Message identifier for subscribed topics</param>
-        /// <param name="grantedQosLevels">List of granted QOS Levels</param>
-        public MqttMsgSubscribedEventArgs(ushort messageId, byte[] grantedQosLevels)
-        {
-            this.MessageId = messageId;
-            this.GrantedQoSLevels = grantedQosLevels;
-        }
     }
 }

@@ -16,6 +16,7 @@ Contributors:
 
 using System.Collections;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Session
 {
     /// <summary>
@@ -24,22 +25,13 @@ namespace uPLibrary.Networking.M2Mqtt.Session
     public abstract class MqttSession
     {
         /// <summary>
-        ///     Client Id
-        /// </summary>
-        public string ClientId { get; set; }
-
-        /// <summary>
-        ///     Messages inflight during session
-        /// </summary>
-        public Hashtable InflightMessages { get; set; }
-
-        /// <summary>
         ///     Constructor
         /// </summary>
         public MqttSession()
             : this(null)
         {
         }
+
 
         /// <summary>
         ///     Constructor
@@ -50,6 +42,18 @@ namespace uPLibrary.Networking.M2Mqtt.Session
             ClientId = clientId;
             InflightMessages = new Hashtable();
         }
+
+
+        /// <summary>
+        ///     Client Id
+        /// </summary>
+        public string ClientId { get; set; }
+
+        /// <summary>
+        ///     Messages inflight during session
+        /// </summary>
+        public Hashtable InflightMessages { get; set; }
+
 
         /// <summary>
         ///     Clean session

@@ -2,6 +2,7 @@ using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 
+
 namespace SOSXR.MQTT.raspmarker
 {
     public class RaspmarkerTester : MonoBehaviour
@@ -15,6 +16,7 @@ namespace SOSXR.MQTT.raspmarker
 
         [SerializeField] private string m_testMarker = "test";
 
+
         private void OnValidate()
         {
             if (_handler == null)
@@ -22,6 +24,7 @@ namespace SOSXR.MQTT.raspmarker
                 _handler = FindFirstObjectByType<RaspmarkerMQTTHandler>();
             }
         }
+
 
         private void OnEnable()
         {
@@ -40,6 +43,7 @@ namespace SOSXR.MQTT.raspmarker
         {
             _handler.SendPayload(m_testIndex);
         }
+
 
         [Button]
         public void TestSendingMarker()

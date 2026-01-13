@@ -4,6 +4,7 @@ using MQTTUnity;
 using SOSXR.EnhancedLogger;
 using UnityEngine;
 
+
 namespace SOSXR.MQTT.raspmarker
 {
     /// <summary>
@@ -16,10 +17,10 @@ namespace SOSXR.MQTT.raspmarker
     {
         [SerializeField] private RaspmarkerStringList m_stringList;
 
+        [SerializeField] private string m_publishTopic = "from-Unity";
+
         public Action<int, string, long> OnReceived;
         public Action<int, string, long> OnSent;
-
-        [SerializeField] private string m_publishTopic = "from-Unity";
 
 
         private void OnEnable()
@@ -77,7 +78,7 @@ namespace SOSXR.MQTT.raspmarker
                 return;
             }
 
-            SendPayload((byte)index);
+            SendPayload((byte) index);
         }
 
 

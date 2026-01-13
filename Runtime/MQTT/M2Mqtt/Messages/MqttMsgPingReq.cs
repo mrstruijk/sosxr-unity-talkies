@@ -16,6 +16,7 @@ Contributors:
 
 using uPLibrary.Networking.M2Mqtt.Exceptions;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
@@ -30,6 +31,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         {
             type = MQTT_MSG_PINGREQ_TYPE;
         }
+
 
         public override byte[] GetBytes(byte protocolVersion)
         {
@@ -50,6 +52,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
             return buffer;
         }
+
 
         /// <summary>
         ///     Parse bytes for a PINGREQ message
@@ -78,16 +81,17 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             return msg;
         }
 
+
         public override string ToString()
         {
-#if TRACE
+            #if TRACE
             return GetTraceString(
                 "PINGREQ",
                 null,
                 null);
-#else
+            #else
             return base.ToString();
-#endif
+            #endif
         }
     }
 }

@@ -16,6 +16,7 @@ Contributors:
 
 using System.Diagnostics;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Utility
 {
     /// <summary>
@@ -31,8 +32,10 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         Queuing = 0x20
     }
 
+
     // delegate for writing trace
     public delegate void WriteTrace(string format, params object[] args);
+
 
     /// <summary>
     ///     Tracing class
@@ -42,11 +45,13 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         public static TraceLevel TraceLevel;
         public static WriteTrace TraceListener;
 
+
         [Conditional("DEBUG")]
         public static void Debug(string format, params object[] args)
         {
             TraceListener?.Invoke(format, args);
         }
+
 
         public static void WriteLine(TraceLevel level, string format)
         {
@@ -56,6 +61,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
             }
         }
 
+
         public static void WriteLine(TraceLevel level, string format, object arg1)
         {
             if (TraceListener != null && (level & TraceLevel) > 0)
@@ -64,6 +70,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
             }
         }
 
+
         public static void WriteLine(TraceLevel level, string format, object arg1, object arg2)
         {
             if (TraceListener != null && (level & TraceLevel) > 0)
@@ -71,6 +78,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
                 TraceListener(format, arg1, arg2);
             }
         }
+
 
         public static void WriteLine(TraceLevel level, string format, object arg1, object arg2, object arg3)
         {

@@ -16,6 +16,7 @@ Contributors:
 
 using System;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Exceptions
 {
     /// <summary>

@@ -16,6 +16,7 @@ Contributors:
 
 using uPLibrary.Networking.M2Mqtt.Messages;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Internal
 {
     /// <summary>
@@ -23,6 +24,20 @@ namespace uPLibrary.Networking.M2Mqtt.Internal
     /// </summary>
     public class MsgInternalEvent : InternalEvent
     {
+        // related message
+        protected MqttMsgBase msg;
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="msg">Related message</param>
+        public MsgInternalEvent(MqttMsgBase msg)
+        {
+            this.msg = msg;
+        }
+
+
         #region Properties ...
 
         /// <summary>
@@ -35,17 +50,5 @@ namespace uPLibrary.Networking.M2Mqtt.Internal
         }
 
         #endregion
-
-        // related message
-        protected MqttMsgBase msg;
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="msg">Related message</param>
-        public MsgInternalEvent(MqttMsgBase msg)
-        {
-            this.msg = msg;
-        }
     }
 }
