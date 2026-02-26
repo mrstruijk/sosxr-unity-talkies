@@ -13,6 +13,17 @@ using Random = UnityEngine.Random;
 
 namespace SOSXR.Talkies
 {
+    /// <summary>
+    ///     Controls GPIO pins on a Raspberry Pi Pico (or compatible device) connected via serial.
+    ///     Communicates using a simple CSV command protocol: <c>SET,&lt;pin&gt;,&lt;0|1&gt;</c> and
+    ///     <c>GET,&lt;pin&gt;</c>. Responses are parsed and surfaced via <see cref="OnPinSetEvent"/>
+    ///     and <see cref="OnPinGetEvent"/>.
+    ///     <para>
+    ///         Requires an <see cref="ISerialConnect"/> component on the same GameObject.
+    ///         Consider also adding <see cref="SafetyPin"/> to automatically drive pins LOW
+    ///         after a configurable timeout.
+    ///     </para>
+    /// </summary>
     [RequireComponent(typeof(ISerialConnect))]
     public class PinController : MonoBehaviour
     {
@@ -34,7 +45,9 @@ namespace SOSXR.Talkies
 
         private ISerialConnect _connector;
 
+        /// <summary>Fired after a SET command confirmation is received, with the pin number and the new value.</summary>
         public event Action<int, bool> OnPinGetEvent;
+        /// <summary>Fired when a GET response is received, reporting the pin number and its current value.</summary>
         public event Action<int, bool> OnPinSetEvent;
 
 
@@ -250,6 +263,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Sends a SET command for the default pin configured in the Inspector.
+        /// </summary>
+        /// <param name="value"><c>true</c> sets the pin HIGH; <c>false</c> sets it LOW.</param>
         [Button(space: 10, horizontalLine: true)]
         public void SetDefaultPin(bool value)
         {
@@ -257,6 +274,7 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>Sends a GET command for the default pin, which triggers <see cref="OnPinGetEvent"/> when the response arrives.</summary>
         [Button]
         public void GetDefaultPin()
         {
@@ -264,6 +282,7 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>Reads the current value of the default pin, then sets it to the opposite state.</summary>
         [Button]
         public void ToggleDefaultPin()
         {
@@ -276,6 +295,12 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Sets a specific GPIO pin HIGH or LOW. Tracks the pin internally so it can be driven
+        ///     LOW on disable.
+        /// </summary>
+        /// <param name="pin">GPIO pin number on the target device.</param>
+        /// <param name="value"><c>true</c> = HIGH, <c>false</c> = LOW.</param>
         [Button(space: 10, horizontalLine: true)]
         public void SetPin(int pin, bool value)
         {
@@ -288,6 +313,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Sends a GET command for the given pin. The response arrives asynchronously via <see cref="OnPinGetEvent"/>.
+        /// </summary>
+        /// <param name="pin">GPIO pin number to query.</param>
         [Button]
         public void GetPin(int pin)
         {
@@ -295,6 +324,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Reads the current value of the specified pin, then sets it to the opposite state.
+        /// </summary>
+        /// <param name="pin">GPIO pin number to toggle.</param>
         [Button]
         public void TogglePin(int pin)
         {

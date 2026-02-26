@@ -9,6 +9,14 @@ using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 namespace SOSXR.Talkies
 {
+    /// <summary>
+    ///     Baud rate presets supported by the native <c>SerialPlugin</c>.
+    ///     Each value maps to a byte index that the plugin uses internally.
+    ///     <list type="bullet">
+    ///         <item><description><c>B4800</c> — command mode baud rate (used by <see cref="DesktopSerialConnector.ConnectInCommandMode"/>).</description></item>
+    ///         <item><description><c>B115200</c> — high-speed data mode baud rate (used by <see cref="DesktopSerialConnector.ConnectInDataMode"/>).</description></item>
+    ///     </list>
+    /// </summary>
     public enum BaudRate : byte
     {
         B4800 = 0,
@@ -21,6 +29,11 @@ namespace SOSXR.Talkies
     }
 
 
+    /// <summary>
+    ///     Connects to a desktop serial device (macOS or Windows) via the native <c>SerialPlugin</c> DLL.
+    ///     Auto-detects available ports on startup and connects in command mode (4800 baud) by default.
+    ///     Implements <see cref="ISerialConnect"/> for use alongside <see cref="PinController"/>.
+    /// </summary>
     public class DesktopSerialConnector : MonoBehaviour, ISerialConnect
     {
         [DisableEditing] [SerializeField] private string[] m_availablePorts = Array.Empty<string>();
@@ -34,6 +47,11 @@ namespace SOSXR.Talkies
 
 
         // [Button]
+        /// <summary>
+        ///     Opens the serial connection on the currently selected port.
+        ///     Calls <see cref="Disconnect"/> first if a connection is already open.
+        ///     Does nothing in Edit mode.
+        /// </summary>
         public void Connect()
         {
             if (!Application.isPlaying)
@@ -80,6 +98,10 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Closes the serial connection via the native plugin.
+        ///     Does nothing in Edit mode.
+        /// </summary>
         public void Disconnect()
         {
             if (!Application.isPlaying)
@@ -99,6 +121,9 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Connects at 4800 baud — the default command mode for the connected device.
+        /// </summary>
         public void ConnectInCommandMode()
         {
             m_baudRate = BaudRate.B4800;
@@ -107,6 +132,9 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Connects at 115200 baud — high-speed data mode for the connected device.
+        /// </summary>
         public void ConnectInDataMode()
         {
             m_baudRate = BaudRate.B115200;
@@ -147,6 +175,11 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Scans for available serial ports on the current platform and updates
+        ///     <c>m_availablePorts</c>. Bluetooth ports are filtered out when
+        ///     <c>m_stripBluetooth</c> is enabled. Disables the component if no ports are found.
+        /// </summary>
         public void RefreshPorts()
         {
             #if UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX

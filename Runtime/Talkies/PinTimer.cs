@@ -6,6 +6,12 @@ using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 namespace SOSXR.Talkies
 {
+    /// <summary>
+    ///     Drives a GPIO pin HIGH for a short configurable duration, then LOW — a single pulse.
+    ///     Requires a <see cref="PinController"/> on the same GameObject.
+    ///     If a pulse is already in progress when <c>ToggleOnOff</c> is called again, the
+    ///     running coroutine is cancelled and the pin is driven LOW.
+    /// </summary>
     [RequireComponent(typeof(PinController))]
     public class PinTimer : MonoBehaviour
     {
@@ -25,6 +31,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Starts a one-shot pulse on the configured pin: HIGH for <c>m_toggleTime</c> seconds,
+        ///     then LOW. If a pulse is already active, stops it and drives the pin LOW instead.
+        /// </summary>
         [Button]
         private void ToggleOnOff()
         {

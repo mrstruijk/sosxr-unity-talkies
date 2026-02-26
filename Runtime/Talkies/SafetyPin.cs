@@ -43,6 +43,13 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Called whenever a pin is SET via <see cref="PinController"/>. Starts a countdown
+        ///     timer for pins driven HIGH; resets the timer when a pin is driven LOW.
+        ///     The timer is only started once per pin — refreshing HIGH will not reset the countdown.
+        /// </summary>
+        /// <param name="pinNumber">GPIO pin number being set.</param>
+        /// <param name="value"><c>true</c> when the pin is driven HIGH; <c>false</c> when LOW.</param>
         private void StartTimer(int pinNumber, bool value)
         {
             if (_safetyPin.Count <= pinNumber)
@@ -91,6 +98,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Immediately drives every tracked pin LOW, regardless of their timer state.
+        ///     Called on disable to ensure hardware is left in a safe state.
+        /// </summary>
         private void HardDisableAllKnownPins()
         {
             for (var i = 0; i < _safetyPin.Count; i++)

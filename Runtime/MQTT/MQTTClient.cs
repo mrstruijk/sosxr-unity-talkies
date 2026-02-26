@@ -89,24 +89,28 @@ namespace MQTTUnity
         private Coroutine _connect;
         private Coroutine _disconnect;
 
+        /// <summary>Gets or sets the broker hostname or IP address.</summary>
         public string BrokerAddress
         {
             get => m_brokerAddress;
             set => m_brokerAddress = value;
         }
 
+        /// <summary>Gets or sets the broker port as a string. Invalid values are silently ignored.</summary>
         public string BrokerPortString
         {
             get => m_brokerPort.ToString();
             set => m_brokerPort = int.TryParse(value, out var port) ? port : m_brokerPort;
         }
 
+        /// <summary>Gets or sets the broker port number.</summary>
         public int BrokerPort
         {
             get => m_brokerPort;
             set => m_brokerPort = value;
         }
 
+        /// <summary>Gets or sets whether to use an SSL/TLS-encrypted connection to the broker.</summary>
         public bool IsEncrypted
         {
             get => m_isEncrypted;
@@ -114,11 +118,15 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>Gets a value indicating whether the MQTT backend is currently connected to the broker.</summary>
         public static bool IsConnected => _MQTTBackend is {IsConnected: true};
+        /// <summary>Invoked on the main thread after a successful broker connection.</summary>
         public static Action OnConnected;
+        /// <summary>Invoked on the main thread when the broker connection is lost or explicitly closed.</summary>
         public static Action OnDisconnected;
 
 
+        /// <summary>Singleton instance. Only one <see cref="MQTTClient"/> may exist; extras are destroyed on Awake.</summary>
         public static MQTTClient Instance;
 
 
@@ -146,6 +154,12 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Initiates an asynchronous connection to the configured MQTT broker.
+        ///     Does nothing if already connected. Any in-flight connect coroutine is
+        ///     restarted. Pending subscriptions, unsubscriptions, and publications are
+        ///     flushed automatically once connected.
+        /// </summary>
         [ContextMenu(nameof(Connect))]
         public void Connect()
         {
@@ -343,6 +357,13 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Removes a previously registered callback from the given topic.
+        ///     When the last callback for a topic is removed, the broker subscription is also cancelled.
+        ///     Safe to call while not connected — the unsubscription is queued and flushed on reconnect.
+        /// </summary>
+        /// <param name="callback">The callback to remove. Must match the instance passed to <see cref="Subscribe"/>.</param>
+        /// <param name="topic">The MQTT topic to unsubscribe from. Defaults to <c>#</c> (all topics).</param>
         public static void Unsubscribe(Action<string, byte[]> callback, string topic = "#")
         {
             if (!_topicCallbacks.TryGetValue(topic, out var callbacks))
@@ -374,12 +395,28 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Publishes a UTF-8 string payload to the given topic.
+        ///     If not currently connected, the message is queued and sent on reconnect.
+        /// </summary>
+        /// <param name="topic">Target MQTT topic.</param>
+        /// <param name="payload">String payload to publish.</param>
+        /// <param name="qosLevel">QoS level (default: exactly-once).</param>
+        /// <param name="retain">Whether the broker should retain the message for new subscribers.</param>
         public static void Publish(string topic, string payload, byte qosLevel = MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, bool retain = false)
         {
             Publish(topic, Encoding.UTF8.GetBytes(payload), qosLevel, retain);
         }
 
 
+        /// <summary>
+        ///     Publishes a raw byte payload to the given topic.
+        ///     If not currently connected, the message is queued and sent on reconnect.
+        /// </summary>
+        /// <param name="topic">Target MQTT topic.</param>
+        /// <param name="payload">Raw byte payload to publish.</param>
+        /// <param name="qosLevel">QoS level (default: exactly-once).</param>
+        /// <param name="retain">Whether the broker should retain the message for new subscribers.</param>
         public static void Publish(string topic, byte[] payload, byte qosLevel = MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, bool retain = false)
         {
             var mssg = Encoding.UTF8.GetString(payload);
@@ -522,6 +559,10 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Begins an asynchronous disconnection from the broker.
+        ///     Clears all subscriptions, pending queues, and fires <see cref="OnDisconnected"/>.
+        /// </summary>
         [ContextMenu(nameof(Disconnect))]
         public void Disconnect()
         {

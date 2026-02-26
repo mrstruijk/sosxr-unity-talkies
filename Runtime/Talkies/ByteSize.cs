@@ -7,10 +7,13 @@ using UnityEngine;
 namespace SOSXR.Talkies
 {
     /// <summary>
-    ///     This works now! The biggest takeaways:
-    ///     - Arduino IDE cannot be connected to the Leonardo at the same time:
-    ///     - if during connect = no connect
-    ///     - when during use = Arduino IDE sets the baud rate, not Unity!
+    ///     Low-level byte-based serial communication component.
+    ///     Sends single or dual-byte commands to a connected device (e.g. an Arduino Leonardo)
+    ///     via the native <c>SerialPlugin</c> and reads single-byte responses.
+    ///     <para>
+    ///         <b>Note:</b> the Arduino IDE must not be connected to the same device simultaneously;
+    ///         if it is, Unity will fail to connect or the IDE will override the baud rate.
+    ///     </para>
     /// </summary>
     [RequireComponent(typeof(ISerialConnect))]
     public class ByteSize : MonoBehaviour
@@ -67,6 +70,10 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Sends a single-byte command to the connected device.
+        /// </summary>
+        /// <param name="command">The byte to send (maps to an ASCII command character).</param>
         public void SendCommand(byte command)
         {
             var commChar = ASCIITable.ToASCII(command);
@@ -93,6 +100,11 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>
+        ///     Sends a position byte and a speed byte to the connected device as two separate bytes.
+        /// </summary>
+        /// <param name="command">Position byte (ASCII-mapped).</param>
+        /// <param name="speed">Speed byte (ASCII-mapped).</param>
         public void SendCommand(byte command, byte speed)
         {
             var posChar = ASCIITable.ToASCII(command);
@@ -121,6 +133,12 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Sends a position and speed command using single-character strings.
+        ///     Each string must be exactly one character long.
+        /// </summary>
+        /// <param name="position">A single character representing the position command.</param>
+        /// <param name="speed">A single character representing the speed command.</param>
         public void SendCommand(string position, string speed)
         {
             if (position.Length != 1)
@@ -142,6 +160,11 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>
+        ///     Sends a combined position+speed command from a two-character string.
+        ///     The first character is the position command, the second is the speed command.
+        /// </summary>
+        /// <param name="posSpeed">A two-character string encoding position and speed.</param>
         public void SendCommand(string posSpeed)
         {
             if (posSpeed.Length != 2)
@@ -156,12 +179,14 @@ namespace SOSXR.Talkies
 
 
         [Button]
+        /// <summary>Sends the <c>'u'</c> (unlock) command to the device.</summary>
         public void Unlock()
         {
             SendCommand(ASCIITable.FromASCII('u'));
         }
 
 
+        /// <summary>Sends the <c>'i'</c> (info) command, asking the device to report its state.</summary>
         [Button]
         public void Info()
         {
@@ -169,6 +194,7 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>Sends the <c>'s'</c> (stop) command to the device.</summary>
         [Button]
         public void Stop()
         {
@@ -176,6 +202,7 @@ namespace SOSXR.Talkies
         }
 
 
+        /// <summary>Sends the <c>'v'</c> (version) command to the device.</summary>
         [Button]
         public void Version()
         {
@@ -192,7 +219,12 @@ namespace SOSXR.Talkies
         }
 
 
-        [Button] // Test reading a single byte from the serial line. Useful if not also done in Update().
+        /// <summary>
+        ///     Reads a single byte from the serial line via the native plugin.
+        ///     Logs the received byte and the round-trip duration since the last <c>SendCommand</c> call.
+        ///     Safe to call manually or from <c>Update</c> (controlled by <c>m_readEveryFrame</c>).
+        /// </summary>
+        [Button]
         public void ReadBuffer()
         {
             if (!_connector.IsConnected)
