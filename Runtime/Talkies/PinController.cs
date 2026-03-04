@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 using HeaderAttribute = SOSXR.SeaShark.HeaderAttribute;
@@ -81,7 +80,7 @@ namespace SOSXR.Talkies
         {
             if (GetComponent<SafetyPin>() == null)
             {
-                this.Warning($"You're running this without {nameof(SafetyPin)}. Is that wise?");
+                Debug.LogWarning($"You're running this without {nameof(SafetyPin)}. Is that wise?");
             }
 
             if (m_debugToggleLED && m_debugToggleRange != Vector2.zero)
@@ -117,7 +116,7 @@ namespace SOSXR.Talkies
         {
             if (!_connector.IsConnected)
             {
-                this.Warning("We're not connected! Cannot continue");
+                Debug.LogWarning("We're not connected! Cannot continue");
 
                 return;
             }
@@ -126,11 +125,11 @@ namespace SOSXR.Talkies
 
             if (ok == 1)
             {
-                this.Verbose("Baud successfully updated to " + baud);
+                // Debug.Log("Baud successfully updated to " + baud);
             }
             else
             {
-                this.Error("Failed to set baud to " + baud);
+                Debug.LogError("Failed to set baud to " + baud);
             }
         }
 
@@ -139,7 +138,7 @@ namespace SOSXR.Talkies
         {
             if (!_connector.IsConnected)
             {
-                this.Warning("We're not connected! Cannot continue");
+                Debug.LogWarning("We're not connected! Cannot continue");
 
                 return;
             }
@@ -188,7 +187,7 @@ namespace SOSXR.Talkies
 
             if (status == "ERR")
             {
-                this.Error($"Pico Error: {response}");
+                Debug.LogError($"Pico Error: {response}");
 
                 return;
             }
@@ -209,7 +208,7 @@ namespace SOSXR.Talkies
             }
             else // This should include the PING/PONG debug response
             {
-                this.Debug($"Pico: {response}");
+                Debug.Log($"Pico: {response}");
             }
         }
 
@@ -218,7 +217,7 @@ namespace SOSXR.Talkies
         {
             if (!_connector.IsConnected)
             {
-                this.Warning($"Not connected. Cannot send: {command}");
+                Debug.LogWarning($"Not connected. Cannot send: {command}");
 
                 return;
             }
@@ -229,11 +228,11 @@ namespace SOSXR.Talkies
 
             if (written != data.Length)
             {
-                this.Error($"Write failed. Sent {written}/{data.Length} bytes for command: {command}");
+                Debug.LogError($"Write failed. Sent {written}/{data.Length} bytes for command: {command}");
             }
             else
             {
-                this.Verbose($"Sent: {command}");
+                // Debug.Log($"Sent: {command}");
             }
         }
 
@@ -258,7 +257,7 @@ namespace SOSXR.Talkies
             {
                 var newValue = !currentValue;
                 SetPin(pin, newValue);
-                this.Debug($"LED toggled from {HighLow(currentValue)} to {HighLow(newValue)}");
+                Debug.Log($"LED toggled from {HighLow(currentValue)} to {HighLow(newValue)}");
             });
         }
 
@@ -290,7 +289,7 @@ namespace SOSXR.Talkies
             {
                 var newValue = !currentValue;
                 SetPin(pin, newValue);
-                this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
+                Debug.Log($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
             });
         }
 
@@ -337,21 +336,21 @@ namespace SOSXR.Talkies
 
 
                 SetPin(pin, newValue);
-                this.Success($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
+                Debug.Log($"Toggled pin {pin} from {HighLow(currentValue)} to {HighLow(newValue)}");
             });
         }
 
 
         private void OnPinSet(int pin, bool value)
         {
-            this.Verbose($"We asked pin {pin} to be set to {HighLow(value)}.");
+            // Debug.Log($"We asked pin {pin} to be set to {HighLow(value)}.");
             OnPinSetEvent?.Invoke(pin, value);
         }
 
 
         private void OnPinGet(int pin, bool value)
         {
-            this.Verbose($"Device states that pin {pin} is now {HighLow(value)}.");
+            // Debug.Log($"Device states that pin {pin} is now {HighLow(value)}.");
             OnPinGetEvent?.Invoke(pin, value);
         }
 

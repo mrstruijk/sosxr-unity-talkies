@@ -27,7 +27,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 using uPLibrary.Networking.M2Mqtt;
@@ -192,7 +191,7 @@ namespace MQTTUnity
                 catch (Exception e)
                 {
                     _MQTTBackend = null;
-                    this.Error($"Initialization failed: {e.Message}");
+                    Debug.LogError($"Initialization failed: {e.Message}");
 
                     yield break;
                 }
@@ -238,7 +237,7 @@ namespace MQTTUnity
             else
             {
                 _MQTTBackend = null;
-                this.Error($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n{errorMsg}");
+                Debug.LogError($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n{errorMsg}");
                 OnDisconnected?.Invoke();
             }
 
@@ -251,7 +250,7 @@ namespace MQTTUnity
             _MQTTBackend.ConnectionClosed += OnMqttConnectionClosed;
             _MQTTBackend.MqttMsgPublishReceived += OnMqttMessageReceived;
 
-            this.Success($"Connected to {m_brokerAddress}:{m_brokerPort}...");
+            Debug.Log($"Connected to {m_brokerAddress}:{m_brokerPort}...");
 
             FlushPendingUnsubscriptions();
 
@@ -274,11 +273,11 @@ namespace MQTTUnity
 
             foreach (var topic in _pendingUnsubscriptions)
             {
-                this.Verbose("Unsubscribing from pending topic: " + topic);
+                // Debug.Log("Unsubscribing from pending topic: " + topic);
                 _MQTTBackend.Unsubscribe(new[] {topic});
             }
 
-            this.Info($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
+            Debug.Log($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
             _pendingUnsubscriptions.Clear();
         }
 
@@ -292,11 +291,11 @@ namespace MQTTUnity
 
             foreach (var (topic, qosLevel) in _pendingSubscriptions)
             {
-                this.Verbose("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
+                // Debug.Log("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
                 _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
             }
 
-            this.Info($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
+            Debug.Log($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
             _pendingSubscriptions.Clear();
         }
 
@@ -313,7 +312,7 @@ namespace MQTTUnity
                 _MQTTBackend.Publish(topic, message, qosLevel, retain);
             }
 
-            this.Verbose($"Flushed {_pendingPublications.Count} pending publications.");
+            // Debug.Log($"Flushed {_pendingPublications.Count} pending publications.");
             _pendingPublications.Clear();
         }
 
@@ -334,19 +333,19 @@ namespace MQTTUnity
                 if (_MQTTBackend is {IsConnected: true})
                 {
                     _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
-                    Log.Static($"Subscribed to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                    // Debug.Log($"Subscribed to topic: {topic} with QoS level: {qosLevel}");
                 }
                 else
                 {
                     _pendingSubscriptions ??= new List<(string topic, byte qosLevel)>();
 
                     _pendingSubscriptions.Add((topic, qosLevel)); // Store pending subscriptions to be processed later
-                    Log.Static($"Pending subscription to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                    // Debug.Log($"Pending subscription to topic: {topic} with QoS level: {qosLevel}");
                 }
             }
             else
             {
-                Log.Static($"Already subscribed to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                // Debug.Log($"Already subscribed to topic: {topic} with QoS level: {qosLevel}");
             }
 
 
@@ -383,14 +382,14 @@ namespace MQTTUnity
             if (_MQTTBackend is {IsConnected: true})
             {
                 _MQTTBackend.Unsubscribe(new[] {topic});
-                Log.Static($"Unsubscribed from topic: {topic}", LogLevel.Verbose);
+                // Debug.Log($"Unsubscribed from topic: {topic}");
             }
             else
             {
                 _pendingUnsubscriptions ??= new List<string>();
 
                 _pendingUnsubscriptions.Add(topic); // Store pending unsubscriptions to be processed later
-                Log.Static($"Pending unsubscription from topic: {topic}", LogLevel.Verbose);
+                // Debug.Log($"Pending unsubscription from topic: {topic}");
             }
         }
 
@@ -424,21 +423,21 @@ namespace MQTTUnity
             if (_MQTTBackend is {IsConnected: true})
             {
                 _MQTTBackend.Publish(topic, payload, qosLevel, retain);
-                Log.Static($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})", LogLevel.Verbose);
+                // Debug.Log($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})");
             }
             else
             {
                 _pendingPublications ??= new List<(string topic, byte[] message, byte qosLevel, bool retain)>();
 
                 _pendingPublications.Add((topic, payload, qosLevel, retain)); // Store pending publications to be processed later
-                Log.Static($"Pending publication to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})", LogLevel.Verbose);
+                // Debug.Log($"Pending publication to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})");
             }
         }
 
 
         private void DecodeMessage(string topic, byte[] payload)
         {
-            this.Verbose($"Message received on topic: {topic} - {Encoding.UTF8.GetString(payload)}");
+            // Debug.Log($"Message received on topic: {topic} - {Encoding.UTF8.GetString(payload)}");
 
             foreach (var (filter, callbacks) in _topicCallbacks)
             {
@@ -455,7 +454,7 @@ namespace MQTTUnity
                     }
                     catch (Exception e)
                     {
-                        this.Error($"Error in MQTT callback for topic {filter} (received: {topic}): {e}");
+                        Debug.LogError($"Error in MQTT callback for topic {filter} (received: {topic}): {e}");
                     }
                 }
             }
@@ -518,7 +517,7 @@ namespace MQTTUnity
             if (_connectionClosed)
             {
                 _connectionClosed = true;
-                this.Info("Connection to the broker closed.");
+                Debug.Log("Connection to the broker closed.");
                 OnDisconnected?.Invoke();
             }
         }
@@ -616,7 +615,7 @@ namespace MQTTUnity
 
             OnDisconnected?.Invoke();
 
-            this.Success("Disconnected from broker: " + m_brokerAddress + ":" + m_brokerPort);
+            Debug.Log("Disconnected from broker: " + m_brokerAddress + ":" + m_brokerPort);
         }
 
 

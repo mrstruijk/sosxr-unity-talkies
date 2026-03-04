@@ -1,5 +1,4 @@
 using System;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 
@@ -35,13 +34,13 @@ namespace SOSXR.Talkies
             {
                 m_isConnected = serialClass.CallStatic<bool>("open", activity, _baudRate);
 
-                this.Verbose(m_isConnected
-                    ? "Connected to USB device"
-                    : "Failed to connect to USB device");
+                // Debug.Log(m_isConnected
+                //     ? "Connected to USB device"
+                //     : "Failed to connect to USB device");
             }
             catch (Exception ex)
             {
-                this.Error($"Exception while connecting: {ex}");
+                Debug.LogError($"Exception while connecting: {ex}");
                 m_isConnected = false;
             }
         }
@@ -60,7 +59,7 @@ namespace SOSXR.Talkies
 
             serialClass.CallStatic("close");
             m_isConnected = false;
-            this.Success("Disconnected from USB device");
+            Debug.Log("Disconnected from USB device");
         }
 
 
@@ -105,7 +104,7 @@ namespace SOSXR.Talkies
         {
             get
             {
-                this.Warning("This is the Android Serial connector, which cannot be connected on non-Android systems");
+                Debug.LogWarning("This is the Android Serial connector, which cannot be connected on non-Android systems");
                 return false;
             }
         }
@@ -113,13 +112,13 @@ namespace SOSXR.Talkies
 
         public void Connect()
         {
-            this.Warning("This is the Android Serial connector, which cannot Connect on non-Android systems");
+            Debug.LogWarning("This is the Android Serial connector, which cannot Connect on non-Android systems");
         }
 
 
         public void Disconnect()
         {
-            this.Warning("This is the Android Serial connector, which cannot Disconnect on non-Android systems");
+            Debug.LogWarning("This is the Android Serial connector, which cannot Disconnect on non-Android systems");
         }
 
 

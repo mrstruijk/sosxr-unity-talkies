@@ -1,4 +1,3 @@
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 
@@ -34,7 +33,7 @@ namespace SOSXR.MQTT.raspmarker
 
         private void TestReceivingPayload(int index, string marker, long time)
         {
-            this.Info($"Received payload {index} ({marker}) at {time}");
+            Debug.Log($"Received payload {index} ({marker}) at {time}");
         }
 
 

@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
@@ -66,32 +65,32 @@ namespace SOSXR.Talkies
 
             if (string.IsNullOrEmpty(m_portName))
             {
-                this.Warning("No port selected. Run RefreshPorts() first.");
+                Debug.LogWarning("No port selected. Run RefreshPorts() first.");
 
                 return;
             }
 
             try
             {
-                this.Verbose($"Connecting to {m_portName}");
+                // Debug.Log($"Connecting to {m_portName}");
                 var result = SerialOpen(m_portName, (byte) m_baudRate, false);
 
                 if (result == 1)
                 {
                     m_isConnected = true;
-                    this.Success($"Connected to device on {m_portName} with baud rate {m_baudRate}");
+                    Debug.Log($"Connected to device on {m_portName} with baud rate {m_baudRate}");
                 }
                 else
                 {
                     m_isConnected = false;
-                    this.Error($"Failed to open {m_portName}. Check connection. Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
+                    Debug.LogError($"Failed to open {m_portName}. Check connection. Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
                 }
             }
             catch (Exception ex)
             {
                 m_isConnected = false;
-                this.Error("Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
-                this.Error($"Exception while connecting: {ex.Message}");
+                Debug.LogError("Is another debugger / IDE open (e.g. Thonny / Arduino IDE)?");
+                Debug.LogError($"Exception while connecting: {ex.Message}");
                 SerialClose();
             }
         }
@@ -113,7 +112,7 @@ namespace SOSXR.Talkies
 
             if (m_isConnected)
             {
-                this.Success("Disconnected from device on " + m_portName);
+                Debug.Log("Disconnected from device on " + m_portName);
             }
 
             m_isConnected = false;
@@ -193,7 +192,7 @@ namespace SOSXR.Talkies
             #elif UNITY_EDITOR_WIN || UNITY_STANDALONE_WIN
                 m_availablePorts = System.IO.Ports.SerialPort.GetPortNames();
             #else
-                this.Error("SerialConnector not yet implemented for this platform. Cannot continue.");
+                Debug.LogError("SerialConnector not yet implemented for this platform. Cannot continue.");
                 enabled = false;
                 return;
             #endif
@@ -204,7 +203,7 @@ namespace SOSXR.Talkies
 
                 if (Application.isPlaying)
                 {
-                    this.Error("No serial ports found. Cannot continue. This now runs in Awake: was that too soon?");
+                    Debug.LogError("No serial ports found. Cannot continue. This now runs in Awake: was that too soon?");
                     enabled = false;
                 }
 
@@ -213,7 +212,7 @@ namespace SOSXR.Talkies
 
             m_selectedPortIndex = Mathf.Clamp(m_selectedPortIndex, 0, m_availablePorts.Length - 1);
             m_portName = m_availablePorts[m_selectedPortIndex];
-            this.Verbose($"Detected {m_availablePorts.Length} port(s). Selected: {m_portName}");
+            // Debug.Log($"Detected {m_availablePorts.Length} port(s). Selected: {m_portName}");
         }
 
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using SOSXR.EnhancedLogger;
 using UnityEngine;
 
 
@@ -17,7 +16,7 @@ namespace SOSXR.MQTT.raspmarker
         {
             if (value.Contains(",") || value.Contains("\"") || value.Contains(" "))
             {
-                this.Error("Values cannot contain commas, spaces, or quotes.", nameof(value));
+                Debug.LogError("Values cannot contain commas, spaces, or quotes.");
 
                 return -1;
             }
@@ -37,7 +36,7 @@ namespace SOSXR.MQTT.raspmarker
             m_markers.Add(value);
             index = m_markers.Count - 1;
 
-            this.Info($"Adding marker {value} with index {index} to list, since it was not yet included.");
+            Debug.Log($"Adding marker {value} with index {index} to list, since it was not yet included.");
 
             return index;
         }

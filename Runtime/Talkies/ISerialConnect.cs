@@ -9,11 +9,11 @@ namespace SOSXR.Talkies
         /// <summary>Gets a value indicating whether the serial device is currently connected.</summary>
         bool IsConnected { get; }
 
-
         /// <summary>Opens the serial connection to the device.</summary>
         void Connect();
 
-
         /// <summary>Closes the serial connection and releases the device.</summary>
         void Disconnect();
+    }
 }
+

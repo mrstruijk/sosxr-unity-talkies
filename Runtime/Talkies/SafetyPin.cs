@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using SOSXR.EnhancedLogger;
 using UnityEngine;
 
 
@@ -37,7 +36,7 @@ namespace SOSXR.Talkies
 
         private void Start()
         {
-            this.Info($"{nameof(SafetyPin)} is initialized. It will turn used pins LOW after {m_setLowAfterSeconds} seconds.");
+            Debug.Log($"{nameof(SafetyPin)} is initialized. It will turn used pins LOW after {m_setLowAfterSeconds} seconds.");
 
             StartCoroutine(TimeCheckerCR());
         }
@@ -88,7 +87,7 @@ namespace SOSXR.Talkies
 
                     if (_safetyPin[i] <= Time.time)
                     {
-                        this.Info($"Setting pin {i} to LOW because it has been too HIGH for too long.");
+                        Debug.Log($"Setting pin {i} to LOW because it has been too HIGH for too long.");
 
                         _pinController.SetPin(i, false);
                         _safetyPin[i] = 0;

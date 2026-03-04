@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using MQTTUnity;
-using SOSXR.EnhancedLogger;
 using UnityEngine;
 
 
@@ -35,24 +34,24 @@ namespace SOSXR.MQTT.raspmarker
 
             if (!string.Equals(topic, Topics.Main))
             {
-                this.Warning($"Topic received from raspmarker ({topic}) is not equal to the expected default topic ({Topics.Main}). Please check."); // Moot check since this cannot happen
+                Debug.LogWarning($"Topic received from raspmarker ({topic}) is not equal to the expected default topic ({Topics.Main}). Please check."); // Moot check since this cannot happen
             }
 
             if (index is < 0 or > 255)
             {
-                this.Warning("Received invalid payload: " + index + ". It needs to be between 0 and 255. Please check"); // Moot check since this cannot happen
+                Debug.LogWarning("Received invalid payload: " + index + ". It needs to be between 0 and 255. Please check"); // Moot check since this cannot happen
             }
 
             if (!m_stringList.TryGetMarker(index, out var marker))
             {
-                this.Warning("Received payload of: " + index + ". This is not registered in our stringList as a valid marker, so we cannot log it in a meaningful way.");
+                Debug.LogWarning("Received payload of: " + index + ". This is not registered in our stringList as a valid marker, so we cannot log it in a meaningful way.");
             }
 
             var unixTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             OnReceived?.Invoke(index, marker, unixTimeMs);
 
-            this.Verbose("Payload received: " + index);
+            // Debug.Log("Payload received: " + index);
         }
 
 
@@ -73,7 +72,7 @@ namespace SOSXR.MQTT.raspmarker
         {
             if (index is < 0 or > 255)
             {
-                this.Error("Trying to send an invalid payload: " + index + ". Please check");
+                Debug.LogError("Trying to send an invalid payload: " + index + ". Please check");
 
                 return;
             }
@@ -86,14 +85,14 @@ namespace SOSXR.MQTT.raspmarker
         {
             if (!m_stringList.TryGetMarker(index, out var marker))
             {
-                this.Warning($"Marker-index {index} is not registered in the stringlist with a corresponding string marker. This is not bad per se (the raspmarker will still received the message), but this doesn't allow Unity to log what this index {index} actually means.");
+                Debug.LogWarning($"Marker-index {index} is not registered in the stringlist with a corresponding string marker. This is not bad per se (the raspmarker will still received the message), but this doesn't allow Unity to log what this index {index} actually means.");
             }
 
             var unixTimeMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
 
             OnSent?.Invoke(index, marker, unixTimeMs);
 
-            this.Verbose("Payload sent: " + index);
+            // Debug.Log("Payload sent: " + index);
 
             MQTTClient.Publish(Topics.GetTopic(m_publishTopic), index.ToString());
         }

@@ -1,5 +1,4 @@
 using System.Collections;
-using SOSXR.EnhancedLogger;
 using UnityEngine;
 using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
@@ -44,7 +43,7 @@ namespace SOSXR.Talkies
 
                 _controller.SetPin(m_pin, false);
 
-                this.Warning("We already had a toogler running. Will turn that toggler off, but not continue from here. Toggle again to resume functionality.");
+                Debug.LogWarning("We already had a toogler running. Will turn that toggler off, but not continue from here. Toggle again to resume functionality.");
 
                 _toggleCoroutine = null;
 

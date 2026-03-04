@@ -1,6 +1,5 @@
 using System.Text;
 using MQTTUnity;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 using UnityEngine.Events;
@@ -46,7 +45,7 @@ public class MQTTFirstResponder : MonoBehaviour
     {
         if (topic != m_onlyRespondToThisTopic && m_onlyRespondToThisTopic != "#" && !string.IsNullOrEmpty(m_onlyRespondToThisTopic))
         {
-            this.Verbose($"We got something, but not the correct topic (incoming is {topic}).");
+            // Debug.Log($"We got something, but not the correct topic (incoming is {topic}).");
 
             return;
         }
@@ -55,12 +54,12 @@ public class MQTTFirstResponder : MonoBehaviour
 
         if (payloadString != m_onlyRespondToThisPayload && m_onlyRespondToThisPayload != "#" && !string.IsNullOrEmpty(m_onlyRespondToThisPayload))
         {
-            this.Verbose($"We got something, but not the correct payload (Payload received is {payloadString}).");
+            // Debug.Log($"We got something, but not the correct payload (Payload received is {payloadString}).");
 
             return;
         }
 
-        this.Info($"Payload received: {payloadString} on topic {topic}");
+        Debug.Log($"Payload received: {payloadString} on topic {topic}");
 
         m_onMessageReceived?.Invoke(topic, payloadString);
     }

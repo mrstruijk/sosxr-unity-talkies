@@ -1,5 +1,4 @@
 using System.Runtime.InteropServices;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 
@@ -80,7 +79,7 @@ namespace SOSXR.Talkies
 
             if (!_connector.IsConnected)
             {
-                this.Warning("Not connected! Cannot send command.");
+                Debug.LogWarning("Not connected! Cannot send command.");
 
                 return;
             }
@@ -89,14 +88,14 @@ namespace SOSXR.Talkies
 
             if (written < 1)
             {
-                this.Warning($"We may not have sent all. Written {written} bytes.");
+                Debug.LogWarning($"We may not have sent all. Written {written} bytes.");
 
                 return;
             }
 
             m_sendTime = Time.time;
 
-            this.Verbose($"Successfully sent command. Command byte: {command} (ascii: {commChar})");
+            // Debug.Log($"Successfully sent command. Command byte: {command} (ascii: {commChar})");
         }
 
 
@@ -112,7 +111,7 @@ namespace SOSXR.Talkies
 
             if (!_connector.IsConnected)
             {
-                this.Warning("Not connected! Cannot send command.");
+                Debug.LogWarning("Not connected! Cannot send command.");
 
                 return;
             }
@@ -121,14 +120,14 @@ namespace SOSXR.Talkies
 
             if (written <= 1)
             {
-                this.Warning($"We may not have sent all. Written {written} bytes.");
+                Debug.LogWarning($"We may not have sent all. Written {written} bytes.");
 
                 return;
             }
 
             m_sendTime = Time.time;
 
-            this.Verbose($"Successfully sent command. Position byte: {command} (ascii: {posChar}) Speed byte: {speed} (ascii: {spdChar})");
+            // Debug.Log($"Successfully sent command. Position byte: {command} (ascii: {posChar}) Speed byte: {speed} (ascii: {spdChar})");
         }
 
 
@@ -143,14 +142,14 @@ namespace SOSXR.Talkies
         {
             if (position.Length != 1)
             {
-                this.Warning("Incorrect position provided. Needs to be a single character.");
+                Debug.LogWarning("Incorrect position provided. Needs to be a single character.");
 
                 return;
             }
 
             if (speed.Length != 1)
             {
-                this.Warning("Incorrect speed provided. Needs to be a single character.");
+                Debug.LogWarning("Incorrect speed provided. Needs to be a single character.");
 
                 return;
             }
@@ -169,7 +168,7 @@ namespace SOSXR.Talkies
         {
             if (posSpeed.Length != 2)
             {
-                this.Warning("This requires 2 characters");
+                Debug.LogWarning("This requires 2 characters");
 
                 return;
             }
@@ -229,7 +228,7 @@ namespace SOSXR.Talkies
         {
             if (!_connector.IsConnected)
             {
-                this.Warning("We're not connected! Cannot continue");
+                Debug.LogWarning("We're not connected! Cannot continue");
 
                 return;
             }
@@ -238,7 +237,7 @@ namespace SOSXR.Talkies
 
             if (result < 0)
             {
-                // this.Verbose("There is no data on the line");
+                // Debug.Log("There is no data on the line");
 
                 return; // No data available
             }
@@ -249,7 +248,7 @@ namespace SOSXR.Talkies
             m_readTime = Time.time;
             m_duration = m_readTime - m_sendTime;
 
-            this.Info($"Received byte:{receivedByte} (ascii:{receivedASCII}) - duration since send: {m_duration:F4} seconds");
+            Debug.Log($"Received byte:{receivedByte} (ascii:{receivedASCII}) - duration since send: {m_duration:F4} seconds");
         }
     }
 }
