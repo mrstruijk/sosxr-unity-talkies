@@ -8,12 +8,11 @@ namespace SOSXR.Talkies
     /// <summary>
     ///     Connects to an Android USB serial device via a Java bridge (<c>com.sosxr.serial.SerialBridge</c>).
     ///     Implements <see cref="ISerialConnect"/> for use alongside <see cref="PinController"/>.
-    ///     Only functional on Android; the commented-out <c>#if</c> block at the bottom shows
-    ///     stub behaviour that can be re-enabled for non-Android builds.
+    ///     Only functional on Android; non-Android builds provide safe no-op stubs.
     /// </summary>
     public class AndroidSerialConnector : MonoBehaviour, ISerialConnect
     {
-        //#if UNITY_ANDROID && !UNITY_EDITOR
+#if UNITY_ANDROID && !UNITY_EDITOR
         [DisableEditing] [SerializeField] private bool m_isConnected = false;
 
         private readonly int _baudRate = 115200;
@@ -33,10 +32,6 @@ namespace SOSXR.Talkies
             try
             {
                 m_isConnected = serialClass.CallStatic<bool>("open", activity, _baudRate);
-
-                // Debug.Log(m_isConnected
-                //     ? "Connected to USB device"
-                //     : "Failed to connect to USB device");
             }
             catch (Exception ex)
             {
@@ -98,7 +93,7 @@ namespace SOSXR.Talkies
         {
             Disconnect();
         }
-        /*#else
+#else
 
         public bool IsConnected
         {
@@ -122,6 +117,17 @@ namespace SOSXR.Talkies
         }
 
 
-        #endif*/
+        public int SerialWrite(byte[] data)
+        {
+            return 0;
+        }
+
+
+        public int SerialRead(byte[] buffer)
+        {
+            return 0;
+        }
+
+#endif
     }
 }
