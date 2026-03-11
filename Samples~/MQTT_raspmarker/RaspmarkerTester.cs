@@ -1,6 +1,6 @@
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
+
 
 namespace SOSXR.MQTT.raspmarker
 {
@@ -15,6 +15,7 @@ namespace SOSXR.MQTT.raspmarker
 
         [SerializeField] private string m_testMarker = "test";
 
+
         private void OnValidate()
         {
             if (_handler == null)
@@ -22,6 +23,7 @@ namespace SOSXR.MQTT.raspmarker
                 _handler = FindFirstObjectByType<RaspmarkerMQTTHandler>();
             }
         }
+
 
         private void OnEnable()
         {
@@ -31,7 +33,7 @@ namespace SOSXR.MQTT.raspmarker
 
         private void TestReceivingPayload(int index, string marker, long time)
         {
-            this.Info($"Received payload {index} ({marker}) at {time}");
+            Debug.Log($"Received payload {index} ({marker}) at {time}");
         }
 
 
@@ -40,6 +42,7 @@ namespace SOSXR.MQTT.raspmarker
         {
             _handler.SendPayload(m_testIndex);
         }
+
 
         [Button]
         public void TestSendingMarker()

@@ -16,6 +16,7 @@ Contributors:
 
 using uPLibrary.Networking.M2Mqtt.Exceptions;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
@@ -30,6 +31,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         {
             type = MQTT_MSG_UNSUBACK_TYPE;
         }
+
 
         /// <summary>
         ///     Parse bytes for a UNSUBACK message
@@ -60,11 +62,12 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             channel.Receive(buffer);
 
             // message id
-            msg.messageId = (ushort)((buffer[index++] << 8) & 0xFF00);
+            msg.messageId = (ushort) ((buffer[index++] << 8) & 0xFF00);
             msg.messageId |= buffer[index++];
 
             return msg;
         }
+
 
         public override byte[] GetBytes(byte protocolVersion)
         {
@@ -83,14 +86,14 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             fixedHeaderSize = 1;
 
             var temp = remainingLength;
+
             // increase fixed header size based on remaining length
             // (each remaining length byte can encode until 128)
             do
             {
                 fixedHeaderSize++;
                 temp = temp / 128;
-            }
-            while (temp > 0);
+            } while (temp > 0);
 
             // allocate buffer for message
             var buffer = new byte[fixedHeaderSize + varHeaderSize + payloadSize];
@@ -109,22 +112,23 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             index = encodeRemainingLength(remainingLength, buffer, index);
 
             // message id
-            buffer[index++] = (byte)((messageId >> 8) & 0x00FF); // MSB
-            buffer[index++] = (byte)(messageId & 0x00FF); // LSB
+            buffer[index++] = (byte) ((messageId >> 8) & 0x00FF); // MSB
+            buffer[index++] = (byte) (messageId & 0x00FF); // LSB
 
             return buffer;
         }
 
+
         public override string ToString()
         {
-#if TRACE
+            #if TRACE
             return GetTraceString(
                 "UNSUBACK",
-                new object[] { "messageId" },
-                new object[] { messageId });
-#else
+                new object[] {"messageId"},
+                new object[] {messageId});
+            #else
             return base.ToString();
-#endif
+            #endif
         }
     }
 }

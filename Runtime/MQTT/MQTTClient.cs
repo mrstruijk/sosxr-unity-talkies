@@ -27,12 +27,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using SOSXR.EnhancedLogger;
 using SOSXR.SeaShark;
 using UnityEngine;
 using uPLibrary.Networking.M2Mqtt;
 using uPLibrary.Networking.M2Mqtt.Messages;
-
 
 
 /// <summary>
@@ -90,24 +88,28 @@ namespace MQTTUnity
         private Coroutine _connect;
         private Coroutine _disconnect;
 
+        /// <summary>Gets or sets the broker hostname or IP address.</summary>
         public string BrokerAddress
         {
             get => m_brokerAddress;
             set => m_brokerAddress = value;
         }
 
+        /// <summary>Gets or sets the broker port as a string. Invalid values are silently ignored.</summary>
         public string BrokerPortString
         {
             get => m_brokerPort.ToString();
             set => m_brokerPort = int.TryParse(value, out var port) ? port : m_brokerPort;
         }
 
+        /// <summary>Gets or sets the broker port number.</summary>
         public int BrokerPort
         {
             get => m_brokerPort;
             set => m_brokerPort = value;
         }
 
+        /// <summary>Gets or sets whether to use an SSL/TLS-encrypted connection to the broker.</summary>
         public bool IsEncrypted
         {
             get => m_isEncrypted;
@@ -115,11 +117,15 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>Gets a value indicating whether the MQTT backend is currently connected to the broker.</summary>
         public static bool IsConnected => _MQTTBackend is {IsConnected: true};
+        /// <summary>Invoked on the main thread after a successful broker connection.</summary>
         public static Action OnConnected;
+        /// <summary>Invoked on the main thread when the broker connection is lost or explicitly closed.</summary>
         public static Action OnDisconnected;
 
 
+        /// <summary>Singleton instance. Only one <see cref="MQTTClient"/> may exist; extras are destroyed on Awake.</summary>
         public static MQTTClient Instance;
 
 
@@ -147,6 +153,12 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Initiates an asynchronous connection to the configured MQTT broker.
+        ///     Does nothing if already connected. Any in-flight connect coroutine is
+        ///     restarted. Pending subscriptions, unsubscriptions, and publications are
+        ///     flushed automatically once connected.
+        /// </summary>
         [ContextMenu(nameof(Connect))]
         public void Connect()
         {
@@ -179,7 +191,7 @@ namespace MQTTUnity
                 catch (Exception e)
                 {
                     _MQTTBackend = null;
-                    this.Error($"Initialization failed: {e.Message}");
+                    Debug.LogError($"Initialization failed: {e.Message}");
 
                     yield break;
                 }
@@ -225,7 +237,7 @@ namespace MQTTUnity
             else
             {
                 _MQTTBackend = null;
-                this.Error($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n{errorMsg}");
+                Debug.LogError($"Failed to connect to {m_brokerAddress}:{m_brokerPort}\n{errorMsg}");
                 OnDisconnected?.Invoke();
             }
 
@@ -238,7 +250,7 @@ namespace MQTTUnity
             _MQTTBackend.ConnectionClosed += OnMqttConnectionClosed;
             _MQTTBackend.MqttMsgPublishReceived += OnMqttMessageReceived;
 
-            this.Success($"Connected to {m_brokerAddress}:{m_brokerPort}...");
+            Debug.Log($"Connected to {m_brokerAddress}:{m_brokerPort}...");
 
             FlushPendingUnsubscriptions();
 
@@ -261,11 +273,11 @@ namespace MQTTUnity
 
             foreach (var topic in _pendingUnsubscriptions)
             {
-                this.Verbose("Unsubscribing from pending topic: " + topic);
+                // Debug.Log("Unsubscribing from pending topic: " + topic);
                 _MQTTBackend.Unsubscribe(new[] {topic});
             }
 
-            this.Info($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
+            Debug.Log($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
             _pendingUnsubscriptions.Clear();
         }
 
@@ -279,11 +291,11 @@ namespace MQTTUnity
 
             foreach (var (topic, qosLevel) in _pendingSubscriptions)
             {
-                this.Verbose("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
+                // Debug.Log("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
                 _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
             }
 
-            this.Info($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
+            Debug.Log($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
             _pendingSubscriptions.Clear();
         }
 
@@ -300,7 +312,7 @@ namespace MQTTUnity
                 _MQTTBackend.Publish(topic, message, qosLevel, retain);
             }
 
-            this.Verbose($"Flushed {_pendingPublications.Count} pending publications.");
+            // Debug.Log($"Flushed {_pendingPublications.Count} pending publications.");
             _pendingPublications.Clear();
         }
 
@@ -321,19 +333,19 @@ namespace MQTTUnity
                 if (_MQTTBackend is {IsConnected: true})
                 {
                     _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
-                    Log.Static($"Subscribed to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                    // Debug.Log($"Subscribed to topic: {topic} with QoS level: {qosLevel}");
                 }
                 else
                 {
                     _pendingSubscriptions ??= new List<(string topic, byte qosLevel)>();
 
                     _pendingSubscriptions.Add((topic, qosLevel)); // Store pending subscriptions to be processed later
-                    Log.Static($"Pending subscription to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                    // Debug.Log($"Pending subscription to topic: {topic} with QoS level: {qosLevel}");
                 }
             }
             else
             {
-                Log.Static($"Already subscribed to topic: {topic} with QoS level: {qosLevel}", LogLevel.Verbose);
+                // Debug.Log($"Already subscribed to topic: {topic} with QoS level: {qosLevel}");
             }
 
 
@@ -344,6 +356,13 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Removes a previously registered callback from the given topic.
+        ///     When the last callback for a topic is removed, the broker subscription is also cancelled.
+        ///     Safe to call while not connected — the unsubscription is queued and flushed on reconnect.
+        /// </summary>
+        /// <param name="callback">The callback to remove. Must match the instance passed to <see cref="Subscribe"/>.</param>
+        /// <param name="topic">The MQTT topic to unsubscribe from. Defaults to <c>#</c> (all topics).</param>
         public static void Unsubscribe(Action<string, byte[]> callback, string topic = "#")
         {
             if (!_topicCallbacks.TryGetValue(topic, out var callbacks))
@@ -363,24 +382,40 @@ namespace MQTTUnity
             if (_MQTTBackend is {IsConnected: true})
             {
                 _MQTTBackend.Unsubscribe(new[] {topic});
-                Log.Static($"Unsubscribed from topic: {topic}", LogLevel.Verbose);
+                // Debug.Log($"Unsubscribed from topic: {topic}");
             }
             else
             {
                 _pendingUnsubscriptions ??= new List<string>();
 
                 _pendingUnsubscriptions.Add(topic); // Store pending unsubscriptions to be processed later
-                Log.Static($"Pending unsubscription from topic: {topic}", LogLevel.Verbose);
+                // Debug.Log($"Pending unsubscription from topic: {topic}");
             }
         }
 
 
+        /// <summary>
+        ///     Publishes a UTF-8 string payload to the given topic.
+        ///     If not currently connected, the message is queued and sent on reconnect.
+        /// </summary>
+        /// <param name="topic">Target MQTT topic.</param>
+        /// <param name="payload">String payload to publish.</param>
+        /// <param name="qosLevel">QoS level (default: exactly-once).</param>
+        /// <param name="retain">Whether the broker should retain the message for new subscribers.</param>
         public static void Publish(string topic, string payload, byte qosLevel = MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, bool retain = false)
         {
             Publish(topic, Encoding.UTF8.GetBytes(payload), qosLevel, retain);
         }
 
 
+        /// <summary>
+        ///     Publishes a raw byte payload to the given topic.
+        ///     If not currently connected, the message is queued and sent on reconnect.
+        /// </summary>
+        /// <param name="topic">Target MQTT topic.</param>
+        /// <param name="payload">Raw byte payload to publish.</param>
+        /// <param name="qosLevel">QoS level (default: exactly-once).</param>
+        /// <param name="retain">Whether the broker should retain the message for new subscribers.</param>
         public static void Publish(string topic, byte[] payload, byte qosLevel = MqttMsgBase.QOS_LEVEL_EXACTLY_ONCE, bool retain = false)
         {
             var mssg = Encoding.UTF8.GetString(payload);
@@ -388,21 +423,21 @@ namespace MQTTUnity
             if (_MQTTBackend is {IsConnected: true})
             {
                 _MQTTBackend.Publish(topic, payload, qosLevel, retain);
-                Log.Static($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})", LogLevel.Verbose);
+                // Debug.Log($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})");
             }
             else
             {
                 _pendingPublications ??= new List<(string topic, byte[] message, byte qosLevel, bool retain)>();
 
                 _pendingPublications.Add((topic, payload, qosLevel, retain)); // Store pending publications to be processed later
-                Log.Static($"Pending publication to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})", LogLevel.Verbose);
+                // Debug.Log($"Pending publication to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})");
             }
         }
 
 
         private void DecodeMessage(string topic, byte[] payload)
         {
-            this.Verbose($"Message received on topic: {topic} - {Encoding.UTF8.GetString(payload)}");
+            // Debug.Log($"Message received on topic: {topic} - {Encoding.UTF8.GetString(payload)}");
 
             foreach (var (filter, callbacks) in _topicCallbacks)
             {
@@ -419,7 +454,7 @@ namespace MQTTUnity
                     }
                     catch (Exception e)
                     {
-                        this.Error($"Error in MQTT callback for topic {filter} (received: {topic}): {e}");
+                        Debug.LogError($"Error in MQTT callback for topic {filter} (received: {topic}): {e}");
                     }
                 }
             }
@@ -482,7 +517,7 @@ namespace MQTTUnity
             if (_connectionClosed)
             {
                 _connectionClosed = true;
-                this.Info("Connection to the broker closed.");
+                Debug.Log("Connection to the broker closed.");
                 OnDisconnected?.Invoke();
             }
         }
@@ -523,6 +558,10 @@ namespace MQTTUnity
         }
 
 
+        /// <summary>
+        ///     Begins an asynchronous disconnection from the broker.
+        ///     Clears all subscriptions, pending queues, and fires <see cref="OnDisconnected"/>.
+        /// </summary>
         [ContextMenu(nameof(Disconnect))]
         public void Disconnect()
         {
@@ -576,7 +615,7 @@ namespace MQTTUnity
 
             OnDisconnected?.Invoke();
 
-            this.Success("Disconnected from broker: " + m_brokerAddress + ":" + m_brokerPort);
+            Debug.Log("Disconnected from broker: " + m_brokerAddress + ":" + m_brokerPort);
         }
 
 

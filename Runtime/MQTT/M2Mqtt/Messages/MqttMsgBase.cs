@@ -16,6 +16,7 @@ Contributors:
 
 using System.Text;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
@@ -23,6 +24,83 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public abstract class MqttMsgBase
     {
+        // message type
+        protected byte type;
+
+        // duplicate delivery
+        protected bool dupFlag;
+
+        // quality of service level
+        protected byte qosLevel;
+
+        // retain flag
+        protected bool retain;
+
+        // message identifier
+        protected ushort messageId;
+
+
+        /// <summary>
+        ///     Returns message bytes rapresentation
+        /// </summary>
+        /// <param name="protocolVersion">Protocol version</param>
+        /// <returns>Bytes rapresentation</returns>
+        public abstract byte[] GetBytes(byte protocolVersion);
+
+
+        /// <summary>
+        ///     Encode remaining length and insert it into message buffer
+        /// </summary>
+        /// <param name="remainingLength">Remaining length value to encode</param>
+        /// <param name="buffer">Message buffer for inserting encoded value</param>
+        /// <param name="index">Index from which insert encoded value into buffer</param>
+        /// <returns>Index updated</returns>
+        protected int encodeRemainingLength(int remainingLength, byte[] buffer, int index)
+        {
+            var digit = 0;
+
+            do
+            {
+                digit = remainingLength % 128;
+                remainingLength /= 128;
+
+                if (remainingLength > 0)
+                {
+                    digit = digit | 0x80;
+                }
+
+                buffer[index++] = (byte) digit;
+            } while (remainingLength > 0);
+
+            return index;
+        }
+
+
+        /// <summary>
+        ///     Decode remaining length reading bytes from socket
+        /// </summary>
+        /// <param name="channel">Channel from reading bytes</param>
+        /// <returns>Decoded remaining length</returns>
+        protected static int decodeRemainingLength(IMqttNetworkChannel channel)
+        {
+            var multiplier = 1;
+            var value = 0;
+            var digit = 0;
+            var nextByte = new byte[1];
+
+            do
+            {
+                // next digit from stream
+                channel.Receive(nextByte);
+                digit = nextByte[0];
+                value += (digit & 127) * multiplier;
+                multiplier *= 128;
+            } while ((digit & 128) != 0);
+
+            return value;
+        }
+
+
         #region Constants...
 
         // mask, offset and size for fixed header fields
@@ -137,79 +215,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
         #endregion
 
-        // message type
-        protected byte type;
-
-        // duplicate delivery
-        protected bool dupFlag;
-
-        // quality of service level
-        protected byte qosLevel;
-
-        // retain flag
-        protected bool retain;
-
-        // message identifier
-        protected ushort messageId;
-
-        /// <summary>
-        ///     Returns message bytes rapresentation
-        /// </summary>
-        /// <param name="protocolVersion">Protocol version</param>
-        /// <returns>Bytes rapresentation</returns>
-        public abstract byte[] GetBytes(byte protocolVersion);
-
-        /// <summary>
-        ///     Encode remaining length and insert it into message buffer
-        /// </summary>
-        /// <param name="remainingLength">Remaining length value to encode</param>
-        /// <param name="buffer">Message buffer for inserting encoded value</param>
-        /// <param name="index">Index from which insert encoded value into buffer</param>
-        /// <returns>Index updated</returns>
-        protected int encodeRemainingLength(int remainingLength, byte[] buffer, int index)
-        {
-            var digit = 0;
-            do
-            {
-                digit = remainingLength % 128;
-                remainingLength /= 128;
-                if (remainingLength > 0)
-                {
-                    digit = digit | 0x80;
-                }
-
-                buffer[index++] = (byte)digit;
-            }
-            while (remainingLength > 0);
-
-            return index;
-        }
-
-        /// <summary>
-        ///     Decode remaining length reading bytes from socket
-        /// </summary>
-        /// <param name="channel">Channel from reading bytes</param>
-        /// <returns>Decoded remaining length</returns>
-        protected static int decodeRemainingLength(IMqttNetworkChannel channel)
-        {
-            var multiplier = 1;
-            var value = 0;
-            var digit = 0;
-            var nextByte = new byte[1];
-            do
-            {
-                // next digit from stream
-                channel.Receive(nextByte);
-                digit = nextByte[0];
-                value += (digit & 127) * multiplier;
-                multiplier *= 128;
-            }
-            while ((digit & 128) != 0);
-
-            return value;
-        }
-
-#if TRACE
+        #if TRACE
         /// <summary>
         ///     Returns a string representation of the message for tracing
         /// </summary>
@@ -226,6 +232,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             {
                 sb.Append("(");
                 var addComma = false;
+
                 for (var i = 0; i < fieldValues.Length; i++)
                 {
                     if (fieldValues[i] != null)
@@ -248,13 +255,16 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             return sb.ToString();
         }
 
+
         private object GetStringObject(object value)
         {
             var binary = value as byte[];
+
             if (binary != null)
             {
                 var hexChars = "0123456789ABCDEF";
                 var sb = new StringBuilder(binary.Length * 2);
+
                 for (var i = 0; i < binary.Length; ++i)
                 {
                     sb.Append(hexChars[binary[i] >> 4]);
@@ -265,10 +275,12 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             }
 
             var list = value as object[];
+
             if (list != null)
             {
                 var sb = new StringBuilder();
                 sb.Append('[');
+
                 for (var i = 0; i < list.Length; ++i)
                 {
                     if (i > 0)
@@ -286,6 +298,6 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
 
             return value;
         }
-#endif
+        #endif
     }
 }

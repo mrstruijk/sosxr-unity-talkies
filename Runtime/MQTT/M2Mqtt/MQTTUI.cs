@@ -24,7 +24,6 @@ SOFTWARE.
 
 
 using System.Text;
-using SOSXR.EnhancedLogger;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -59,7 +58,7 @@ namespace MQTTUnity
 
             if (m_MQTTClient == null)
             {
-                this.Verbose("MQTTUI: MQTTClient component is not assigned.");
+                // Debug.Log("MQTTUI: MQTTClient component is not assigned.");
             }
         }
 
@@ -108,7 +107,7 @@ namespace MQTTUnity
 
             m_consoleInputField.text = msg;
 
-            this.Verbose("MQTTUI: SetUIMessage: " + msg);
+            // Debug.Log("MQTTUI: SetUIMessage: " + msg);
             UpdateUI();
         }
 
@@ -124,7 +123,7 @@ namespace MQTTUnity
 
             m_consoleInputField.text += topic + " : " + msg + "\n";
 
-            this.Verbose("MQTTUI: AddUIMessage: " + msg);
+            // Debug.Log("MQTTUI: AddUIMessage: " + msg);
 
             UpdateUI();
         }

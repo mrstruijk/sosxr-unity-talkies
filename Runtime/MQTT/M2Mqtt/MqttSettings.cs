@@ -21,26 +21,20 @@ namespace uPLibrary.Networking.M2Mqtt
     /// </summary>
     public class MqttSettings
     {
-        // default port for MQTT protocol
-        public const int MQTT_BROKER_DEFAULT_PORT = 1883;
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        private MqttSettings()
+        {
+            Port = MQTT_BROKER_DEFAULT_PORT;
+            SslPort = MQTT_BROKER_DEFAULT_SSL_PORT;
+            TimeoutOnReceiving = MQTT_DEFAULT_TIMEOUT;
+            AttemptsOnRetry = MQTT_ATTEMPTS_RETRY;
+            DelayOnRetry = MQTT_DELAY_RETRY;
+            TimeoutOnConnection = MQTT_CONNECT_TIMEOUT;
+            InflightQueueSize = MQTT_MAX_INFLIGHT_QUEUE_SIZE;
+        }
 
-        public const int MQTT_BROKER_DEFAULT_SSL_PORT = 8883;
-
-        // default timeout on receiving from client
-        public const int MQTT_DEFAULT_TIMEOUT = 30000;
-
-        // max publish, subscribe and unsubscribe retry for QoS Level 1 or 2
-        public const int MQTT_ATTEMPTS_RETRY = 3;
-
-        // delay for retry publish, subscribe and unsubscribe for QoS Level 1 or 2
-        public const int MQTT_DELAY_RETRY = 10000;
-
-        // broker need to receive the first message (CONNECT)
-        // within a reasonable amount of time after TCP/IP connection 
-        public const int MQTT_CONNECT_TIMEOUT = 30000;
-
-        // default inflight queue size
-        public const int MQTT_MAX_INFLIGHT_QUEUE_SIZE = int.MaxValue;
 
         /// <summary>
         ///     Listening connection port
@@ -93,21 +87,28 @@ namespace uPLibrary.Networking.M2Mqtt
             }
         }
 
+        // default port for MQTT protocol
+        public const int MQTT_BROKER_DEFAULT_PORT = 1883;
+
+        public const int MQTT_BROKER_DEFAULT_SSL_PORT = 8883;
+
+        // default timeout on receiving from client
+        public const int MQTT_DEFAULT_TIMEOUT = 30000;
+
+        // max publish, subscribe and unsubscribe retry for QoS Level 1 or 2
+        public const int MQTT_ATTEMPTS_RETRY = 3;
+
+        // delay for retry publish, subscribe and unsubscribe for QoS Level 1 or 2
+        public const int MQTT_DELAY_RETRY = 10000;
+
+        // broker need to receive the first message (CONNECT)
+        // within a reasonable amount of time after TCP/IP connection 
+        public const int MQTT_CONNECT_TIMEOUT = 30000;
+
+        // default inflight queue size
+        public const int MQTT_MAX_INFLIGHT_QUEUE_SIZE = int.MaxValue;
+
         // singleton instance
         private static MqttSettings instance;
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        private MqttSettings()
-        {
-            Port = MQTT_BROKER_DEFAULT_PORT;
-            SslPort = MQTT_BROKER_DEFAULT_SSL_PORT;
-            TimeoutOnReceiving = MQTT_DEFAULT_TIMEOUT;
-            AttemptsOnRetry = MQTT_ATTEMPTS_RETRY;
-            DelayOnRetry = MQTT_DELAY_RETRY;
-            TimeoutOnConnection = MQTT_CONNECT_TIMEOUT;
-            InflightQueueSize = MQTT_MAX_INFLIGHT_QUEUE_SIZE;
-        }
     }
 }

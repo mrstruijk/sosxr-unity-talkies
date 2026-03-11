@@ -1,8 +1,14 @@
 using SOSXR.SeaShark;
 using UnityEngine;
 
+
 namespace MQTTUnity
 {
+    /// <summary>
+    ///     Development helper for quickly verifying that the MQTT connection works.
+    ///     Subscribes to a configurable topic on enable and provides Inspector buttons
+    ///     to publish a test message and to subscribe/unsubscribe manually.
+    /// </summary>
     public class MQTTTester : MonoBehaviour
     {
         [SerializeField] private string m_debugTopic = "SOSXR/Test";
@@ -23,6 +29,7 @@ namespace MQTTUnity
 
 
         [Button]
+        /// <summary>Publishes the configured debug payload to the debug topic via <see cref="MQTTClient"/>.</summary>
         public void PublishDebug()
         {
             MQTTClient.Publish(m_debugTopic, m_debugPayload);

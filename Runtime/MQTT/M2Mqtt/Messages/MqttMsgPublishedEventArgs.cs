@@ -17,9 +17,11 @@ Contributors:
 #if (!MF_FRAMEWORK_VERSION_V4_2 && !MF_FRAMEWORK_VERSION_V4_3)
 using System;
 
+
 #else
 using Microsoft.SPOT;
 #endif
+
 
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
@@ -28,6 +30,33 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
     /// </summary>
     public class MqttMsgPublishedEventArgs : EventArgs
     {
+        // message identifier
+
+        // published flag
+
+
+        /// <summary>
+        ///     Constructor (published message)
+        /// </summary>
+        /// <param name="messageId">Message identifier published</param>
+        public MqttMsgPublishedEventArgs(ushort messageId)
+            : this(messageId, true)
+        {
+        }
+
+
+        /// <summary>
+        ///     Constructor
+        /// </summary>
+        /// <param name="messageId">Message identifier</param>
+        /// <param name="isPublished">Publish flag</param>
+        public MqttMsgPublishedEventArgs(ushort messageId, bool isPublished)
+        {
+            MessageId = messageId;
+            IsPublished = isPublished;
+        }
+
+
         #region Properties...
 
         /// <summary>
@@ -41,29 +70,5 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         public bool IsPublished { get; internal set; }
 
         #endregion
-
-        // message identifier
-
-        // published flag
-
-        /// <summary>
-        ///     Constructor (published message)
-        /// </summary>
-        /// <param name="messageId">Message identifier published</param>
-        public MqttMsgPublishedEventArgs(ushort messageId)
-            : this(messageId, true)
-        {
-        }
-
-        /// <summary>
-        ///     Constructor
-        /// </summary>
-        /// <param name="messageId">Message identifier</param>
-        /// <param name="isPublished">Publish flag</param>
-        public MqttMsgPublishedEventArgs(ushort messageId, bool isPublished)
-        {
-            this.MessageId = messageId;
-            this.IsPublished = isPublished;
-        }
     }
 }

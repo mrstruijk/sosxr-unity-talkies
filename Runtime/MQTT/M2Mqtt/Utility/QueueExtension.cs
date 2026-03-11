@@ -16,6 +16,7 @@ Contributors:
 
 using System.Collections;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Utility
 {
     /// <summary>
@@ -23,13 +24,6 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
     /// </summary>
     internal static class QueueExtension
     {
-        /// <summary>
-        ///     Predicate for searching inside a queue
-        /// </summary>
-        /// <param name="item">Item of the queue</param>
-        /// <returns>Result of predicate</returns>
-        internal delegate bool QueuePredicate(object item);
-
         /// <summary>
         ///     Get (without removing) an item from queue based on predicate
         /// </summary>
@@ -48,5 +42,13 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
 
             return null;
         }
+
+
+        /// <summary>
+        ///     Predicate for searching inside a queue
+        /// </summary>
+        /// <param name="item">Item of the queue</param>
+        /// <returns>Result of predicate</returns>
+        internal delegate bool QueuePredicate(object item);
     }
 }

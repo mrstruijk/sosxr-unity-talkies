@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using UnityEngine;
 
+
 namespace SOSXR.MQTT.raspmarker
 {
     public class MQTTLogger : MonoBehaviour

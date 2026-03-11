@@ -296,9 +296,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _scenePrefabInstances:
   - _gameObject: {fileID: 1472311453}
-    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/UI.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/SOSXR/Prefabs/UI.prefab
   - _gameObject: {fileID: 1699045181}
-    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/Prefabs/MQTT_Client.prefab
+    _prefab: Assets/_SOSXR/sosxr-unity-talkies/Runtime/MQTT/SOSXR/Prefabs/MQTT_Client.prefab
 --- !u!4 &878511173
 Transform:
   m_ObjectHideFlags: 11
@@ -432,8 +432,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa34c1dacd5b43b18769fe71d358e568, type: 3}
   m_Name: 
   m_EditorClassIdentifier: SOSXR.Talkies.MQTT::MQTTFirstResponder
-  m_topic: '#'
-  m_payload: 
+  m_toggleTopic: 0
+  m_togglePayload: 0
+  m_onlyRespondToThisTopic: 
+  m_onlyRespondToThisPayload: 
   m_onMessageReceived:
     m_PersistentCalls:
       m_Calls: []
@@ -536,6 +538,10 @@ PrefabInstance:
     - target: {fileID: 1918438245780905246, guid: e76dc1b4af5e943778699318a358351c, type: 3}
       propertyPath: m_OnDidEndEdit.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 3470911251230751052, guid: e76dc1b4af5e943778699318a358351c, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: -1.1001282
       objectReference: {fileID: 0}
     - target: {fileID: 4315367953442216202, guid: e76dc1b4af5e943778699318a358351c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target

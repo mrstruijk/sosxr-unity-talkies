@@ -16,6 +16,7 @@ Contributors:
 
 using uPLibrary.Networking.M2Mqtt.Exceptions;
 
+
 namespace uPLibrary.Networking.M2Mqtt.Messages
 {
     /// <summary>
@@ -30,6 +31,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
         {
             type = MQTT_MSG_DISCONNECT_TYPE;
         }
+
 
         /// <summary>
         ///     Parse bytes for a DISCONNECT message
@@ -58,6 +60,7 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             return msg;
         }
 
+
         public override byte[] GetBytes(byte protocolVersion)
         {
             var buffer = new byte[2];
@@ -78,16 +81,17 @@ namespace uPLibrary.Networking.M2Mqtt.Messages
             return buffer;
         }
 
+
         public override string ToString()
         {
-#if TRACE
+            #if TRACE
             return GetTraceString(
                 "DISCONNECT",
                 null,
                 null);
-#else
+            #else
             return base.ToString();
-#endif
+            #endif
         }
     }
 }
