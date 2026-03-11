@@ -3,10 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
-using SOSXR.SeaShark;
 using UnityEngine;
-using HeaderAttribute = SOSXR.SeaShark.HeaderAttribute;
-using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 using Random = UnityEngine.Random;
 
 

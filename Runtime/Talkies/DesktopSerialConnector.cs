@@ -1,9 +1,7 @@
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
-using SOSXR.SeaShark;
 using UnityEngine;
-using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
 
 
 namespace SOSXR.Talkies

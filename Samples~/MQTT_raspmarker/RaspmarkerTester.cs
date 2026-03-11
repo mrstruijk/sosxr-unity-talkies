@@ -1,4 +1,4 @@
-using SOSXR.SeaShark;
+using SOSXR.Talkies;
 using UnityEngine;
 
 
@@ -8,7 +8,7 @@ namespace SOSXR.MQTT.raspmarker
     {
         [SerializeField] [HideInInspector] private RaspmarkerMQTTHandler _handler;
 
-        [SeaShark.Header("Testing sending markers")]
+        [Header("Testing sending markers")]
         [Tooltip("The index is restricted to the byte-range, since that is what the markerbox / raspmarker can send or receive. \n" +
                  "In this context the index refers to an index in the string list, where we can store the meaning of each index (=marker)")]
         [SerializeField] [Range(0, 256)] private int m_testIndex = 64;

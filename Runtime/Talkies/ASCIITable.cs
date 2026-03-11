@@ -1,7 +1,7 @@
 using System;
 
 
-namespace SOSXR.SeaShark
+namespace SOSXR.Talkies
 {
     /// <summary>
     ///     See: https://www.ascii-code.com for more info.

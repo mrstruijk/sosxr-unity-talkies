@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-using ButtonAttribute = SOSXR.SeaShark.ButtonAttribute;
+
 
 
 namespace SOSXR.Talkies
