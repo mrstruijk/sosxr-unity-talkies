@@ -1,4 +1,4 @@
-﻿/*
+/*
 The MIT License (MIT)
 
 Copyright (c) 2018 Giovanni Paolo Vigano' && 2025 SOSXR
@@ -53,7 +53,7 @@ namespace MQTTUnity
         {
             if (m_MQTTClient == null)
             {
-                m_MQTTClient = FindFirstObjectByType<MQTTClient>();
+                m_MQTTClient = FindAnyObjectByType<MQTTClient>();
             }
 
             if (m_MQTTClient == null)

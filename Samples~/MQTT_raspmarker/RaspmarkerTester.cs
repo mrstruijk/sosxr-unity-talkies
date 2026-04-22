@@ -20,7 +20,7 @@ namespace SOSXR.MQTT.raspmarker
         {
             if (_handler == null)
             {
-                _handler = FindFirstObjectByType<RaspmarkerMQTTHandler>();
+                _handler = FindAnyObjectByType<RaspmarkerMQTTHandler>();
             }
         }
 

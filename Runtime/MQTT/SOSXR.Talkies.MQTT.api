@@ -1,0 +1,539 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+public class MQTTFirstResponder : UnityEngine.MonoBehaviour
+{
+    public MQTTFirstResponder() {}
+}
+
+namespace MQTTUnity
+{
+    [System.Xml.Serialization.XmlType(TypeName = @"broker-settings")] public class BrokerSettings
+    {
+        [UnityEngine.Tooltip(@"Optional alternate addresses, used if the previous host is not accessible")] public string[] alternateAddress;
+        [UnityEngine.Tooltip(@"Encrypted access to the broker")] public bool encrypted;
+        [UnityEngine.Tooltip(@"Address of the host running the broker")] public string host = @"localhost";
+        [UnityEngine.Tooltip(@"Port used to access the broker")] public int port = 1883;
+        public BrokerSettings() {}
+    }
+
+    public class MQTTClient : UnityEngine.MonoBehaviour
+    {
+        public static MQTTClient Instance;
+        public static System.Action OnConnected;
+        public static System.Action OnDisconnected;
+        public string BrokerAddress { get; set; }
+        public int BrokerPort { get; set; }
+        public string BrokerPortString { get; set; }
+        public static bool IsConnected { get; }
+        public bool IsEncrypted { get; set; }
+        public MQTTClient() {}
+        [UnityEngine.ContextMenu(@"Connect")] public void Connect();
+        [UnityEngine.ContextMenu(@"Disconnect")] public void Disconnect();
+        public static void Publish(string topic, byte[] payload, byte qosLevel = 2, bool retain = false);
+        public static void Publish(string topic, string payload, byte qosLevel = 2, bool retain = false);
+        public static void Subscribe(System.Action<string, byte[]> callback, string topic = @"#", byte qosLevel = 2);
+        public static void Unsubscribe(System.Action<string, byte[]> callback, string topic = @"#");
+    }
+
+    public class MQTTTester : UnityEngine.MonoBehaviour
+    {
+        public MQTTTester() {}
+        [SOSXR.Talkies.Button(null, null, 0, false)] public void PublishDebug();
+    }
+
+    public class MQTTUI : UnityEngine.MonoBehaviour
+    {
+        public MQTTUI() {}
+        public void SetUIMessage(string msg = @"");
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt
+{
+    public class Fx
+    {
+        public Fx() {}
+        public static void SleepThread(int millisecondsTimeout);
+        public static void StartThread(System.Threading.ThreadStart threadStart);
+    }
+
+    public interface IMqttNetworkChannel
+    {
+        public bool DataAvailable { get; }
+        public void Close();
+        public void Connect();
+        public int Receive(byte[] buffer);
+        public int Receive(byte[] buffer, int timeout);
+        public int Send(byte[] buffer);
+    }
+
+    public static class IPAddressUtility
+    {
+        public static System.Net.Sockets.AddressFamily GetAddressFamily(this System.Net.IPAddress ipAddress);
+    }
+
+    public class MQTTBackend
+    {
+        public event MQTTBackend.ConnectionClosedEventHandler ConnectionClosed;
+        public event MQTTBackend.MqttMsgPublishedEventHandler MqttMsgPublished;
+        public event MQTTBackend.MqttMsgPublishEventHandler MqttMsgPublishReceived;
+        public event MQTTBackend.MqttMsgSubscribedEventHandler MqttMsgSubscribed;
+        public event MQTTBackend.MqttMsgUnsubscribedEventHandler MqttMsgUnsubscribed;
+        public bool CleanSession { get; }
+        public string ClientId { get; }
+        public bool IsConnected { get; }
+        public MqttProtocolVersion ProtocolVersion { get; set; }
+        public MqttSettings Settings { get; }
+        public bool WillFlag { get; }
+        public string WillMessage { get; }
+        public byte WillQosLevel { get; }
+        public string WillTopic { get; }
+        [System.Obsolete(@"Use this ctor MqttClient(string brokerHostName) insted")] public MQTTBackend(System.Net.IPAddress brokerIpAddress) {}
+        public MQTTBackend(string brokerHostName) {}
+        [System.Obsolete(@"Use this ctor MqttClient(string brokerHostName, int brokerPort, bool secure, X509Certificate caCert) insted")] public MQTTBackend(System.Net.IPAddress brokerIpAddress, int brokerPort, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate caCert, System.Security.Cryptography.X509Certificates.X509Certificate clientCert, MqttSslProtocols sslProtocol) {}
+        public MQTTBackend(string brokerHostName, int brokerPort, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate caCert, System.Security.Cryptography.X509Certificates.X509Certificate clientCert, MqttSslProtocols sslProtocol) {}
+        public MQTTBackend(string brokerHostName, int brokerPort, bool secure, MqttSslProtocols sslProtocol, System.Net.Security.RemoteCertificateValidationCallback userCertificateValidationCallback, System.Net.Security.LocalCertificateSelectionCallback userCertificateSelectionCallback) {}
+        public MQTTBackend(string brokerHostName, int brokerPort, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate caCert, System.Security.Cryptography.X509Certificates.X509Certificate clientCert, MqttSslProtocols sslProtocol, System.Net.Security.RemoteCertificateValidationCallback userCertificateValidationCallback) {}
+        public MQTTBackend(string brokerHostName, int brokerPort, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate caCert, System.Security.Cryptography.X509Certificates.X509Certificate clientCert, MqttSslProtocols sslProtocol, System.Net.Security.RemoteCertificateValidationCallback userCertificateValidationCallback, System.Net.Security.LocalCertificateSelectionCallback userCertificateSelectionCallback) {}
+        public byte Connect(string clientId);
+        public byte Connect(string clientId, string username, string password);
+        public byte Connect(string clientId, string username, string password, bool cleanSession, ushort keepAlivePeriod);
+        public byte Connect(string clientId, string username, string password, bool willRetain, byte willQosLevel, bool willFlag, string willTopic, string willMessage, bool cleanSession, ushort keepAlivePeriod);
+        public void Disconnect();
+        public ushort Publish(string topic, byte[] message);
+        public ushort Publish(string topic, byte[] message, byte qosLevel, bool retain);
+        public ushort Subscribe(string[] topics, byte[] qosLevels);
+        public ushort Unsubscribe(string[] topics);
+        public delegate void ConnectionClosedEventHandler(object sender, System.EventArgs e);
+        public delegate void MqttMsgPublishedEventHandler(object sender, Messages.MqttMsgPublishedEventArgs e);
+        public delegate void MqttMsgPublishEventHandler(object sender, Messages.MqttMsgPublishEventArgs e);
+        public delegate void MqttMsgSubscribedEventHandler(object sender, Messages.MqttMsgSubscribedEventArgs e);
+        public delegate void MqttMsgUnsubscribedEventHandler(object sender, Messages.MqttMsgUnsubscribedEventArgs e);
+    }
+
+    public class MqttNetworkChannel : IMqttNetworkChannel
+    {
+        public bool DataAvailable { get; }
+        public string RemoteHostName { get; }
+        public System.Net.IPAddress RemoteIpAddress { get; }
+        public int RemotePort { get; }
+        public MqttNetworkChannel(System.Net.Sockets.Socket socket) {}
+        public MqttNetworkChannel(string remoteHostName, int remotePort) {}
+        public MqttNetworkChannel(System.Net.Sockets.Socket socket, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate serverCert, MqttSslProtocols sslProtocol, System.Net.Security.RemoteCertificateValidationCallback userCertificateValidationCallback, System.Net.Security.LocalCertificateSelectionCallback userCertificateSelectionCallback) {}
+        public MqttNetworkChannel(string remoteHostName, int remotePort, bool secure, System.Security.Cryptography.X509Certificates.X509Certificate caCert, System.Security.Cryptography.X509Certificates.X509Certificate clientCert, MqttSslProtocols sslProtocol, System.Net.Security.RemoteCertificateValidationCallback userCertificateValidationCallback, System.Net.Security.LocalCertificateSelectionCallback userCertificateSelectionCallback) {}
+        public void Accept();
+        public void Close();
+        public void Connect();
+        public int Receive(byte[] buffer);
+        public int Receive(byte[] buffer, int timeout);
+        public int Send(byte[] buffer);
+    }
+
+    public enum MqttProtocolVersion
+    {
+        Version_3_1 = 3,
+        Version_3_1_1 = 4,
+    }
+
+    public class MqttSettings
+    {
+        public const int MQTT_ATTEMPTS_RETRY = 3;
+        public const int MQTT_BROKER_DEFAULT_PORT = 1883;
+        public const int MQTT_BROKER_DEFAULT_SSL_PORT = 8883;
+        public const int MQTT_CONNECT_TIMEOUT = 30000;
+        public const int MQTT_DEFAULT_TIMEOUT = 30000;
+        public const int MQTT_DELAY_RETRY = 10000;
+        public const int MQTT_MAX_INFLIGHT_QUEUE_SIZE = int.MaxValue;
+        public int AttemptsOnRetry { get; }
+        public int DelayOnRetry { get; }
+        public int InflightQueueSize { get; set; }
+        public static MqttSettings Instance { get; }
+        public int Port { get; }
+        public int SslPort { get; }
+        public int TimeoutOnConnection { get; }
+        public int TimeoutOnReceiving { get; }
+    }
+
+    public enum MqttSslProtocols
+    {
+        None = 0,
+        SSLv3 = 1,
+        TLSv1_0 = 2,
+        TLSv1_1 = 3,
+        TLSv1_2 = 4,
+    }
+
+    public static class MqttSslUtility
+    {
+        public static System.Security.Authentication.SslProtocols ToSslPlatformEnum(MqttSslProtocols mqttSslProtocol);
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt.Exceptions
+{
+    public enum MqttClientErrorCode
+    {
+        WillWrong = 1,
+        KeepAliveWrong = 2,
+        TopicWildcard = 3,
+        TopicLength = 4,
+        QosNotAllowed = 5,
+        TopicsEmpty = 6,
+        QosLevelsEmpty = 7,
+        TopicsQosLevelsNotMatch = 8,
+        WrongBrokerMessage = 9,
+        WrongMessageId = 10,
+        InflightQueueFull = 11,
+        InvalidFlagBits = 12,
+        InvalidConnectFlags = 13,
+        InvalidClientId = 14,
+        InvalidProtocolName = 15,
+    }
+
+    public class MqttClientException : System.Exception
+    {
+        public MqttClientErrorCode ErrorCode { get; set; }
+        public MqttClientException(MqttClientErrorCode errorCode) {}
+    }
+
+    public class MqttCommunicationException : System.Exception
+    {
+        public MqttCommunicationException() {}
+        public MqttCommunicationException(System.Exception e) {}
+    }
+
+    public class MqttConnectionException : System.Exception
+    {
+        public MqttConnectionException(string message, System.Exception innerException) {}
+    }
+
+    public class MqttTimeoutException : System.Exception
+    {
+        public MqttTimeoutException() {}
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt.Internal
+{
+    public abstract class InternalEvent
+    {
+        protected InternalEvent() {}
+    }
+
+    public class MsgInternalEvent : InternalEvent
+    {
+        protected uPLibrary.Networking.M2Mqtt.Messages.MqttMsgBase msg;
+        public uPLibrary.Networking.M2Mqtt.Messages.MqttMsgBase Message { get; set; }
+        public MsgInternalEvent(uPLibrary.Networking.M2Mqtt.Messages.MqttMsgBase msg) {}
+    }
+
+    public class MsgPublishedInternalEvent : MsgInternalEvent
+    {
+        public bool IsPublished { get; }
+        public MsgPublishedInternalEvent(uPLibrary.Networking.M2Mqtt.Messages.MqttMsgBase msg, bool isPublished) {}
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt.Messages
+{
+    public abstract class MqttMsgBase
+    {
+        protected bool dupFlag;
+        protected ushort messageId;
+        public const byte QOS_LEVEL_AT_LEAST_ONCE = 1;
+        public const byte QOS_LEVEL_AT_MOST_ONCE = 0;
+        public const byte QOS_LEVEL_EXACTLY_ONCE = 2;
+        public const byte QOS_LEVEL_GRANTED_FAILURE = 128;
+        protected byte qosLevel;
+        protected bool retain;
+        protected byte type;
+        public bool DupFlag { get; set; }
+        public ushort MessageId { get; set; }
+        public byte QosLevel { get; set; }
+        public bool Retain { get; set; }
+        public byte Type { get; set; }
+        protected MqttMsgBase() {}
+        protected static int decodeRemainingLength(IMqttNetworkChannel channel);
+        protected int encodeRemainingLength(int remainingLength, byte[] buffer, int index);
+        public abstract byte[] GetBytes(byte protocolVersion);
+        protected string GetTraceString(string name, object[] fieldNames, object[] fieldValues);
+    }
+
+    public class MqttMsgConnack : MqttMsgBase
+    {
+        public const byte CONN_ACCEPTED = 0;
+        public const byte CONN_REFUSED_IDENT_REJECTED = 2;
+        public const byte CONN_REFUSED_NOT_AUTHORIZED = 5;
+        public const byte CONN_REFUSED_PROT_VERS = 1;
+        public const byte CONN_REFUSED_SERVER_UNAVAILABLE = 3;
+        public const byte CONN_REFUSED_USERNAME_PASSWORD = 4;
+        public byte ReturnCode { get; set; }
+        public bool SessionPresent { get; set; }
+        public MqttMsgConnack() {}
+        public override byte[] GetBytes(byte ProtocolVersion);
+        public static MqttMsgConnack Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgConnect : MqttMsgBase
+    {
+        protected byte willQosLevel;
+        protected bool willRetain;
+        public bool CleanSession { get; set; }
+        public string ClientId { get; set; }
+        public ushort KeepAlivePeriod { get; set; }
+        public string Password { get; set; }
+        public string ProtocolName { get; set; }
+        public byte ProtocolVersion { get; set; }
+        public string Username { get; set; }
+        public bool WillFlag { get; set; }
+        public string WillMessage { get; set; }
+        public byte WillQosLevel { get; set; }
+        public bool WillRetain { get; set; }
+        public string WillTopic { get; set; }
+        public MqttMsgConnect() {}
+        public MqttMsgConnect(string clientId) {}
+        public MqttMsgConnect(string clientId, string username, string password, bool willRetain, byte willQosLevel, bool willFlag, string willTopic, string willMessage, bool cleanSession, ushort keepAlivePeriod, byte protocolVersion) {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgConnect Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgConnectEventArgs : System.EventArgs
+    {
+        public MqttMsgConnect Message { get; }
+        public MqttMsgConnectEventArgs(MqttMsgConnect connect) {}
+    }
+
+    public class MqttMsgContext
+    {
+        public int Attempt { get; set; }
+        public MqttMsgFlow Flow { get; set; }
+        public string Key { get; }
+        public MqttMsgBase Message { get; set; }
+        public MqttMsgState State { get; set; }
+        public int Timestamp { get; set; }
+        public MqttMsgContext() {}
+    }
+
+    public class MqttMsgDisconnect : MqttMsgBase
+    {
+        public MqttMsgDisconnect() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgDisconnect Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public enum MqttMsgFlow
+    {
+        ToPublish = 0,
+        ToAcknowledge = 1,
+    }
+
+    public class MqttMsgPingReq : MqttMsgBase
+    {
+        public MqttMsgPingReq() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPingReq Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPingResp : MqttMsgBase
+    {
+        public MqttMsgPingResp() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPingResp Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPuback : MqttMsgBase
+    {
+        public MqttMsgPuback() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPuback Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPubcomp : MqttMsgBase
+    {
+        public MqttMsgPubcomp() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPubcomp Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPublish : MqttMsgBase
+    {
+        public byte[] Message { get; set; }
+        public string Topic { get; set; }
+        public MqttMsgPublish() {}
+        public MqttMsgPublish(string topic, byte[] message) {}
+        public MqttMsgPublish(string topic, byte[] message, bool dupFlag, byte qosLevel, bool retain) {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPublish Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPublishedEventArgs : System.EventArgs
+    {
+        public bool IsPublished { get; }
+        public ushort MessageId { get; }
+        public MqttMsgPublishedEventArgs(ushort messageId) {}
+        public MqttMsgPublishedEventArgs(ushort messageId, bool isPublished) {}
+    }
+
+    public class MqttMsgPublishEventArgs : System.EventArgs
+    {
+        public bool DupFlag { get; set; }
+        public byte[] Message { get; }
+        public byte QosLevel { get; }
+        public bool Retain { get; }
+        public string Topic { get; }
+        public MqttMsgPublishEventArgs(string topic, byte[] message, bool dupFlag, byte qosLevel, bool retain) {}
+    }
+
+    public class MqttMsgPubrec : MqttMsgBase
+    {
+        public MqttMsgPubrec() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPubrec Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgPubrel : MqttMsgBase
+    {
+        public MqttMsgPubrel() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgPubrel Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public enum MqttMsgState
+    {
+        QueuedQos0 = 0,
+        QueuedQos1 = 1,
+        QueuedQos2 = 2,
+        WaitForPuback = 3,
+        WaitForPubrec = 4,
+        WaitForPubrel = 5,
+        WaitForPubcomp = 6,
+        SendPubrec = 7,
+        SendPubrel = 8,
+        SendPubcomp = 9,
+        SendPuback = 10,
+        SendSubscribe = 11,
+        SendUnsubscribe = 12,
+        WaitForSuback = 13,
+        WaitForUnsuback = 14,
+    }
+
+    public class MqttMsgSuback : MqttMsgBase
+    {
+        public byte[] GrantedQoSLevels { get; set; }
+        public MqttMsgSuback() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgSuback Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgSubscribe : MqttMsgBase
+    {
+        public byte[] QoSLevels { get; set; }
+        public string[] Topics { get; set; }
+        public MqttMsgSubscribe() {}
+        public MqttMsgSubscribe(string[] topics, byte[] qosLevels) {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgSubscribe Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgSubscribedEventArgs : System.EventArgs
+    {
+        public byte[] GrantedQoSLevels { get; }
+        public ushort MessageId { get; }
+        public MqttMsgSubscribedEventArgs(ushort messageId, byte[] grantedQosLevels) {}
+    }
+
+    public class MqttMsgSubscribeEventArgs : System.EventArgs
+    {
+        public ushort MessageId { get; }
+        public byte[] QoSLevels { get; }
+        public string[] Topics { get; }
+        public MqttMsgSubscribeEventArgs(ushort messageId, string[] topics, byte[] qosLevels) {}
+    }
+
+    public class MqttMsgUnsuback : MqttMsgBase
+    {
+        public MqttMsgUnsuback() {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgUnsuback Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgUnsubscribe : MqttMsgBase
+    {
+        public string[] Topics { get; set; }
+        public MqttMsgUnsubscribe() {}
+        public MqttMsgUnsubscribe(string[] topics) {}
+        public override byte[] GetBytes(byte protocolVersion);
+        public static MqttMsgUnsubscribe Parse(byte fixedHeaderFirstByte, byte protocolVersion, IMqttNetworkChannel channel);
+        public override string ToString();
+    }
+
+    public class MqttMsgUnsubscribedEventArgs : System.EventArgs
+    {
+        public ushort MessageId { get; }
+        public MqttMsgUnsubscribedEventArgs(ushort messageId) {}
+    }
+
+    public class MqttMsgUnsubscribeEventArgs : System.EventArgs
+    {
+        public ushort MessageId { get; }
+        public string[] Topics { get; }
+        public MqttMsgUnsubscribeEventArgs(ushort messageId, string[] topics) {}
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt.Session
+{
+    public class MqttClientSession : MqttSession
+    {
+        public MqttClientSession(string clientId) {}
+    }
+
+    public abstract class MqttSession
+    {
+        public string ClientId { get; set; }
+        public System.Collections.Hashtable InflightMessages { get; set; }
+        public MqttSession() {}
+        public MqttSession(string clientId) {}
+        public virtual void Clear();
+    }
+}
+
+namespace uPLibrary.Networking.M2Mqtt.Utility
+{
+    public static class Trace
+    {
+        public static TraceLevel TraceLevel;
+        public static WriteTrace TraceListener;
+        [System.Diagnostics.Conditional(@"DEBUG")] public static void Debug(string format, params object[] args);
+        public static void WriteLine(TraceLevel level, string format);
+        public static void WriteLine(TraceLevel level, string format, object arg1);
+        public static void WriteLine(TraceLevel level, string format, object arg1, object arg2);
+        public static void WriteLine(TraceLevel level, string format, object arg1, object arg2, object arg3);
+    }
+
+    public enum TraceLevel
+    {
+        Error = 1,
+        Warning = 2,
+        Information = 4,
+        Verbose = 15,
+        Frame = 16,
+        Queuing = 32,
+    }
+
+    public delegate void WriteTrace(string format, params object[] args);
+}

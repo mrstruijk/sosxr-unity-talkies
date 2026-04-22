@@ -1,0 +1,48 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace SOSXR.MQTT.raspmarker
+{
+    public class MarkerLog
+    {
+        public int Index;
+        public string Marker;
+        public long Time;
+        public MarkerLog() {}
+    }
+
+    public class MQTTLogger : UnityEngine.MonoBehaviour
+    {
+        public MQTTLogger() {}
+    }
+
+    public class RaspmarkerMQTTHandler : UnityEngine.MonoBehaviour
+    {
+        public System.Action<int, string, long> OnReceived;
+        public System.Action<int, string, long> OnSent;
+        public RaspmarkerMQTTHandler() {}
+        public void SendPayload(int index);
+        public void SendPayload(string marker);
+    }
+
+    [UnityEngine.CreateAssetMenu(fileName = @"FileName", menuName = @"SOSXR/MQTT/raspmarker", order = 0)] public class RaspmarkerStringList : UnityEngine.ScriptableObject
+    {
+        public System.Collections.Generic.List<string> Markers { get; }
+        public RaspmarkerStringList() {}
+        public int GetOrAdd(string value);
+        public bool TryGetMarker(int index, out string value);
+    }
+
+    public class RaspmarkerTester : UnityEngine.MonoBehaviour
+    {
+        public RaspmarkerTester() {}
+        [SOSXR.Talkies.Button(null, null, 0, false)] public void TestSendingIndex();
+        [SOSXR.Talkies.Button(null, null, 0, false)] public void TestSendingMarker();
+    }
+
+    public static class Topics
+    {
+        public static readonly string Main = @"raspmarker";
+        public static string GetTopic(string marker = @"");
+    }
+}

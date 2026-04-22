@@ -1,0 +1,127 @@
+// This file is generated. Do not modify by hand.
+// XML documentation file not found. To check if public methods have XML comments,
+// make sure the XML doc file is present and located next to the scraped dll
+namespace SOSXR.Talkies
+{
+    public class AndroidSerialConnector : UnityEngine.MonoBehaviour, ISerialConnect
+    {
+        public bool IsConnected { get; }
+        public AndroidSerialConnector() {}
+        public void Connect();
+        public void Disconnect();
+        public int SerialRead(byte[] buffer);
+        public int SerialWrite(byte[] data);
+    }
+
+    public static class ASCIITable
+    {
+        public static byte FromASCII(char ascii);
+        public static byte FromASCII(string ascii);
+        public static char ToASCII(byte b);
+    }
+
+    public enum BaudRate : byte
+    {
+        B4800 = 0,
+        B9600 = 1,
+        B19200 = 2,
+        B38400 = 3,
+        B57600 = 4,
+        B115200 = 5,
+        TestBaud = 10,
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Method)] public class ButtonAttribute : System.Attribute
+    {
+        public bool HorizontalLine { get; set; }
+        public string ItemName { get; set; }
+        public int Space { get; set; }
+        public string Tooltip { get; set; }
+        public ButtonAttribute(string itemName = default(string), string tooltip = default(string), int space = 0, bool horizontalLine = false) {}
+    }
+
+    [UnityEngine.RequireComponent(typeof(ISerialConnect))] public class ByteSize : UnityEngine.MonoBehaviour
+    {
+        public ByteSize() {}
+        [Button(null, null, 0, false)] public void Info();
+        [Button(null, null, 0, false)] public void ReadBuffer();
+        public void SendCommand(byte command);
+        [Button(null, null, 0, false)] public void SendCommand(string posSpeed);
+        public void SendCommand(byte command, byte speed);
+        [Button(null, null, 0, false)] public void SendCommand(string position, string speed);
+        [Button(null, null, 0, false)] public void Stop();
+        [Button(null, null, 0, false)] public void Unlock();
+        [Button(null, null, 0, false)] public void Version();
+    }
+
+    public class DesktopSerialConnector : UnityEngine.MonoBehaviour, ISerialConnect
+    {
+        public bool IsConnected { get; }
+        public DesktopSerialConnector() {}
+        public void Connect();
+        [Button(null, null, 0, false)] public void ConnectInCommandMode();
+        [Button(null, null, 0, false)] public void ConnectInDataMode();
+        [Button(null, null, 0, false)] public void Disconnect();
+        [Button(null, null, 0, false)] public void RefreshPorts();
+    }
+
+    public class DisableEditingAttribute : UnityEngine.PropertyAttribute
+    {
+        public DisableEditingAttribute() {}
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field)] public class EnableIfAttribute : UnityEngine.PropertyAttribute
+    {
+        public readonly string ConditionField;
+        public EnableIfAttribute(string conditionField) {}
+    }
+
+    public interface ISerialConnect
+    {
+        public bool IsConnected { get; }
+        public void Connect();
+        public void Disconnect();
+    }
+
+    [UnityEngine.RequireComponent(typeof(ISerialConnect))] public class PinController : UnityEngine.MonoBehaviour
+    {
+        public event System.Action<int, bool> OnPinGetEvent;
+        public event System.Action<int, bool> OnPinSetEvent;
+        public PinController() {}
+        [Button(null, null, 0, false)] public void GetDefaultPin();
+        [Button(null, null, 0, false)] public void GetPin(int pin);
+        [Button(null, null, 10, true)] public void Ping();
+        [Button(null, null, 10, true)] public void SetDefaultPin(bool value);
+        [Button(null, null, 10, true)] public void SetPin(int pin, bool value);
+        [Button(null, null, 0, false)] public void ToggleDefaultPin();
+        [Button(null, null, 0, false)] public void ToggleLED();
+        [Button(null, null, 0, false)] public void TogglePin(int pin);
+    }
+
+    [UnityEngine.RequireComponent(typeof(PinController))] public class PinTimer : UnityEngine.MonoBehaviour
+    {
+        public PinTimer() {}
+    }
+
+    [UnityEngine.RequireComponent(typeof(PinController))] public class PinTimerWithEvents : UnityEngine.MonoBehaviour
+    {
+        public PinTimerWithEvents() {}
+    }
+
+    [UnityEngine.RequireComponent(typeof(PinController))] public class SafetyPin : UnityEngine.MonoBehaviour
+    {
+        public SafetyPin() {}
+    }
+
+    [System.AttributeUsage(System.AttributeTargets.Field)] public class ShowIfAttribute : UnityEngine.PropertyAttribute
+    {
+        public readonly string ConditionField;
+        public ShowIfAttribute(string conditionField) {}
+    }
+
+    public class SuffixAttribute : UnityEngine.PropertyAttribute
+    {
+        public readonly string Suffix;
+        public SuffixAttribute(string suffix) {}
+    }
+}
