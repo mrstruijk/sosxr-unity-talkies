@@ -126,7 +126,7 @@ namespace SOSXR.Talkies
             }
             else
             {
-                Debug.LogError("Failed to set baud to " + baud);
+                Debug.LogError($"Failed to set baud to {baud}");
             }
         }
 

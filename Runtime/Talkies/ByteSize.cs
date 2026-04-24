@@ -218,7 +218,7 @@ namespace SOSXR.Talkies
             m_readTime = Time.time;
             m_duration = m_readTime - m_sendTime;
 
-            Debug.Log($"Received byte:{receivedByte} (ascii:{receivedASCII}) - duration since send: {m_duration:F4} seconds");
+            // Debug.Log($"Received byte:{receivedByte} (ascii:{receivedASCII}) - duration since send: {m_duration:F4} seconds");
         }
     }
 }

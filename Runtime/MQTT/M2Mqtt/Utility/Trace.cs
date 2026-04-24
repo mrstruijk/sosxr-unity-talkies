@@ -1,4 +1,4 @@
-﻿/*
+/*
 Copyright (c) 2013, 2014 Paolo Patierno
 
 All rights reserved. This program and the accompanying materials
@@ -34,7 +34,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
 
 
     // delegate for writing trace
-    public delegate void WriteTrace(string format, params object[] args);
+    public delegate void WriteTrace(string message);
 
 
     /// <summary>
@@ -47,9 +47,9 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
 
 
         [Conditional("DEBUG")]
-        public static void Debug(string format, params object[] args)
+        public static void Debug(string message)
         {
-            TraceListener?.Invoke(format, args);
+            TraceListener?.Invoke(message);
         }
 
 
@@ -66,7 +66,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         {
             if (TraceListener != null && (level & TraceLevel) > 0)
             {
-                TraceListener(format, arg1);
+                TraceListener(string.Format(format, arg1));
             }
         }
 
@@ -75,7 +75,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         {
             if (TraceListener != null && (level & TraceLevel) > 0)
             {
-                TraceListener(format, arg1, arg2);
+                TraceListener(string.Format(format, arg1, arg2));
             }
         }
 
@@ -84,7 +84,7 @@ namespace uPLibrary.Networking.M2Mqtt.Utility
         {
             if (TraceListener != null && (level & TraceLevel) > 0)
             {
-                TraceListener(format, arg1, arg2, arg3);
+                TraceListener(string.Format(format, arg1, arg2, arg3));
             }
         }
     }
