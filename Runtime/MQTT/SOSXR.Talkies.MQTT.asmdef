@@ -1,16 +1,16 @@
 {
-  "name": "SOSXR.Talkies.MQTT",
-  "rootNamespace": "",
-  "references": [
-    "GUID:b3d0034280ab84628a492477fb441f39"
-  ],
-  "includePlatforms": [],
-  "excludePlatforms": [],
-  "allowUnsafeCode": false,
-  "overrideReferences": false,
-  "precompiledReferences": [],
-  "autoReferenced": true,
-  "defineConstraints": [],
-  "versionDefines": [],
-  "noEngineReferences": false
+    "name": "SOSXR.Talkies.MQTT",
+    "rootNamespace": "",
+    "references": [
+        "GUID:b3d0034280ab84628a492477fb441f39"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
 }

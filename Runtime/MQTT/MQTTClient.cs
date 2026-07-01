@@ -44,21 +44,23 @@ namespace MQTTUnity
     /// </summary>
     public class MQTTClient : MonoBehaviour
     {
-        [UnityEngine.Header("MQTT broker configuration")] [Tooltip("IP address or URL of the host running the broker")]
+        [UnityEngine.Header("MQTT broker configuration")]
+        [Tooltip("IP address or URL of the host running the broker")]
         [SerializeField] private string m_brokerAddress = "localhost";
 
         [Tooltip("Port where the broker accepts connections")]
         [SerializeField] private int m_brokerPort = 1883;
 
-        [Tooltip("Use encrypted connection")] [SerializeField]
+        [Tooltip("Use encrypted connection")]
+        [SerializeField]
         private bool m_isEncrypted;
 
         [UnityEngine.Header("Connection parameters")]
         [Tooltip("Connection to the broker is delayed by the the given milliseconds")]
-        [SerializeField] [Suffix("ms")] private int m_connectionDelay = 500;
+        [SerializeField][Suffix("ms")] private int m_connectionDelay = 500;
 
         [Tooltip("Connection timeout in milliseconds")]
-        [SerializeField] [Suffix("ms")] private int m_timeoutOnConnection = MqttSettings.MQTT_CONNECT_TIMEOUT;
+        [SerializeField][Suffix("ms")] private int m_timeoutOnConnection = MqttSettings.MQTT_CONNECT_TIMEOUT;
 
         [Tooltip("Connect on startup")]
         [SerializeField] private bool m_autoConnect;
@@ -118,7 +120,7 @@ namespace MQTTUnity
 
 
         /// <summary>Gets a value indicating whether the MQTT backend is currently connected to the broker.</summary>
-        public static bool IsConnected => _MQTTBackend is {IsConnected: true};
+        public static bool IsConnected => _MQTTBackend is { IsConnected: true };
         /// <summary>Invoked on the main thread after a successful broker connection.</summary>
         public static Action OnConnected;
         /// <summary>Invoked on the main thread when the broker connection is lost or explicitly closed.</summary>
@@ -162,7 +164,7 @@ namespace MQTTUnity
         [ContextMenu(nameof(Connect))]
         public void Connect()
         {
-            if (_MQTTBackend is {IsConnected: true})
+            if (_MQTTBackend is { IsConnected: true })
             {
                 return;
             }
@@ -274,7 +276,7 @@ namespace MQTTUnity
             foreach (var topic in _pendingUnsubscriptions)
             {
                 // Debug.Log("Unsubscribing from pending topic: " + topic);
-                _MQTTBackend.Unsubscribe(new[] {topic});
+                _MQTTBackend.Unsubscribe(new[] { topic });
             }
 
             Debug.Log($"Flushed {_pendingUnsubscriptions.Count} pending unsubscriptions.");
@@ -292,7 +294,7 @@ namespace MQTTUnity
             foreach (var (topic, qosLevel) in _pendingSubscriptions)
             {
                 // Debug.Log("Subscribing to pending topic: " + topic + " with QoS level: " + qosLevel);
-                _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
+                _MQTTBackend.Subscribe(new[] { topic }, new[] { qosLevel });
             }
 
             Debug.Log($"Flushed {_pendingSubscriptions.Count} pending subscriptions.");
@@ -330,9 +332,9 @@ namespace MQTTUnity
                 callbacks = new List<Action<string, byte[]>>();
                 _topicCallbacks[topic] = callbacks;
 
-                if (_MQTTBackend is {IsConnected: true})
+                if (_MQTTBackend is { IsConnected: true })
                 {
-                    _MQTTBackend.Subscribe(new[] {topic}, new[] {qosLevel});
+                    _MQTTBackend.Subscribe(new[] { topic }, new[] { qosLevel });
                     // Debug.Log($"Subscribed to topic: {topic} with QoS level: {qosLevel}");
                 }
                 else
@@ -379,9 +381,9 @@ namespace MQTTUnity
 
             _topicCallbacks.Remove(topic);
 
-            if (_MQTTBackend is {IsConnected: true})
+            if (_MQTTBackend is { IsConnected: true })
             {
-                _MQTTBackend.Unsubscribe(new[] {topic});
+                _MQTTBackend.Unsubscribe(new[] { topic });
                 // Debug.Log($"Unsubscribed from topic: {topic}");
             }
             else
@@ -420,7 +422,7 @@ namespace MQTTUnity
         {
             var mssg = Encoding.UTF8.GetString(payload);
 
-            if (_MQTTBackend is {IsConnected: true})
+            if (_MQTTBackend is { IsConnected: true })
             {
                 _MQTTBackend.Publish(topic, payload, qosLevel, retain);
                 // Debug.Log($"Published message to topic: {topic} with payload: {mssg} and QoS level: {qosLevel} (retain: {retain})");
@@ -629,7 +631,7 @@ namespace MQTTUnity
         }
 
 
-        #if ((!UNITY_EDITOR && UNITY_WSA_10_0 || !UNITY_EDITOR && UNITY_ANDROID))
+#if ((!UNITY_EDITOR && UNITY_WSA_10_0 || !UNITY_EDITOR && UNITY_ANDROID))
         private void OnApplicationFocus(bool focus)
         {
             // On UWP 10 (HoloLeng) / Android we cannot tell whether the application actually got closed or just minimized.
@@ -643,6 +645,6 @@ namespace MQTTUnity
                 DisconnectImmediately();
             }
         }
-        #endif
+#endif
     }
 }
