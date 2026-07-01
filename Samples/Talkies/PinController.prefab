@@ -50,7 +50,7 @@ MonoBehaviour:
   m_availablePorts: []
   m_selectedPortIndex: 0
   m_portName: 
-  m_baudRate: 115200
+  m_baudRate: 5
   m_isConnected: 0
 --- !u!114 &555147389088819683
 MonoBehaviour:
